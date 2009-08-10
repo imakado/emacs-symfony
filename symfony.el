@@ -81,6 +81,8 @@ e.x,
 
 (defvar sf:previous-log-file nil)
 
+(defvar sf:number-of-lines-shown-when-opening-log-file 200)
+
 (defun sf:project-absolute-path (file-name)
   (assert (stringp file-name))
   (cond
@@ -315,7 +317,51 @@ find file quickly (dont use anything interface)")
       (when (and log-dir (file-accessible-directory-p log-dir))
         log-dir)))))
 
+(defun sf:make-log-buffer-name (log-file)
+  (concat "*" log-file "*"))
+
+
+(defun sf:open-log-file (log-file)
+  (let ((bufname (sf:make-log-buffer-name log-file)))
+    (unless (get-buffer bufname)
+      (get-buffer-create bufname)
+      (set-buffer bufname)
+      (setq auto-window-vscroll t)
+      (symfony-minor-mode t)
+      (start-process "symfony-tail"
+                     bufname
+                     "tail"
+                     "-n" (format "%d" sf:number-of-lines-shown-when-opening-log-file )
+                     "-f"
+                     (expand-file-name log-file))
+      (current-buffer)
+      )))
+
+(defsubst sf:trim (s)
+  "strip space and newline"
+  (replace-regexp-in-string
+   "[ \t\n]*$" "" (replace-regexp-in-string "^[ \t\n]*" "" s)))
+
+(defun sf:command-infomation ()
+  (let ((re (rx bol
+                (group (+ not-newline))
+                (group "sf-cmd:"
+                       (+ not-newline)
+                       eol))))
+    (with-temp-buffer
+      (goto-char (point-min))
+      (insert (substitute-command-keys (format "\\{%s}" "sf:minor-mode-map")))
+      (loop initially (goto-char (point-min))
+            while (re-search-forward re nil t)
+            collect (let* ((key (sf:trim (match-string 1)))
+                           (command (sf:trim (match-string 2)))
+                           (display key)
+                           (real command))
+                      `(,display . ,real))))))
+
+
 ;;;; Commands
+;; Prefix: sf-cmd:
 (defun sf-cmd:all-project-files ()
   (interactive)
   (sf:anything-project (sf:project-files)))
@@ -348,27 +394,6 @@ find file quickly (dont use anything interface)")
   (interactive)
   (sf:anything-project (sf:matched-files "test")))
 
-(defun sf:make-log-buffer-name (log-file)
-  (concat "*" log-file "*"))
-
-(defvar sf:number-of-lines-shown-when-opening-log-file 200)
-
-(defun sf:open-log-file (log-file)
-  (let ((bufname (sf:make-log-buffer-name log-file)))
-    (unless (get-buffer bufname)
-      (get-buffer-create bufname)
-      (set-buffer bufname)
-      (setq auto-window-vscroll t)
-      (symfony-minor-mode t)
-      (start-process "symfony-tail"
-                     bufname
-                     "tail"
-                     "-n" (format "%d" sf:number-of-lines-shown-when-opening-log-file )
-                     "-f"
-                     (expand-file-name log-file))
-      (current-buffer)
-      )))
-
 (defun sf-cmd:open-log-file (log-file)
   (interactive
    (list
@@ -382,6 +407,7 @@ find file quickly (dont use anything interface)")
   (let ((log-buffer  (sf:open-log-file log-file)))
     (switch-to-buffer log-buffer)
     (recenter t)))
+
 
 ;;;; Minor Mode
 (defmacro sf:key-with-prefix (key-kbd-sym)
@@ -541,6 +567,35 @@ find file quickly (dont use anything interface)")
          (file-path (sf:catdir actions-directory file-name)))
     (when (and file-path (file-exists-p file-path) (file-readable-p file-path))
       (list file-path))))
+
+
+;;;; Script
+;; Prefix: sf-script:
+
+;; (defvar sf-script:buffer-name "*Symfony Output*")
+;; (defvar sf-script:history nil)
+
+;; (defcustom sf-script:symfony-command nil
+;;   "Symfony command(full path).
+;; IF this variable is nil, \"symfony\" command is searched in PATH")
+
+;; (defun sf-script:symfony-command ()
+;;   (cond
+;;    (sf-script:symfony-command
+;;     (file-executable-p sf-script:symfony-command))
+;;    (t
+;;     (let ((command (executable-find "symfony")))
+;;       (or command
+;;           (error "symfony command is not in PATH"))))))
+
+;; (defun sf-script:start-process ()
+;;   )
+
+;; (defun sf-script:run (command params)
+;;   (assert (stringp command))
+;;   (assert (listp params))
+  
+;;   )
 
 ;;;; Keybinds
 (sf:define-key "C-p" 'sf-cmd:primary-switch)
@@ -775,7 +830,7 @@ find file quickly (dont use anything interface)")
            (sf:relative-files))))
 
       (desc "sf:get-log-directory")
-      (expect "t/askeet/log"
+      (expect "t/askeet/log/"
         (file-relative-name
          (sf:with-file-buffer (sf:askeet-path-to "apps/frontend/modules/user/actions" "voteAction.class.php")
            (sf:get-log-directory))))
