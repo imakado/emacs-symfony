@@ -22,16 +22,31 @@
 ;; Boston, MA 02110-1301, USA.
 
 
-
 ;;; Commentary:
 
-;; tested only emamcs22
+;; tested only on emamcs22
 
+;;; Installation:
+
+;; install these libraries:
+;; `anything.el' http://www.emacswiki.org/emacs/anything.el
+;; `anything-match-plugin.el'  http://www.emacswiki.org/emacs/anything-match-plugin.el
+;; `anything-project.el' http://github.com/imakado/emacs-symfony/tree/master
+;; `symfony.el' http://github.com/imakado/emacs-symfony/tree/master
+
+;; add these lines to your .emacs file:
+;; (require 'symfony)
+
+
+;;; TODO:
+;; - Commands to run symfony command.
+;; - Code Completion
 
 (require 'cl)
-(require 'php-mode)
 (require 'rx)
+(require 'php-mode)
 (require 'anything)
+(require 'anything-match-plugin)
 (require 'anything-project)
 
 
