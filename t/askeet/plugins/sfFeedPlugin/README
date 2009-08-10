@@ -1,0 +1,19 @@
+= sfFeedPlugin plugin =
+
+The `sfFeedPlugin` simplifies the creation of syndication feeds.
+
+== Installation ==
+
+  * Install the plugin
+  
+  {{{
+    symfony plugin-install http://plugins.symfony-project.com/sfFeedPlugin
+  }}}
+
+  * Clear you cache
+
+  {{{
+    symfony cc
+  }}}
+
+  * You're done.

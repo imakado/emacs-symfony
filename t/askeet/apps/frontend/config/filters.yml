@@ -1,0 +1,15 @@
+rendering: ~
+web_debug: ~
+security:  ~
+
+# generally, you will want to insert your own filters here
+myTagFilter:
+  class: myTagFilter
+  param:
+    host_exclude_regex: /^(www|askeet)/
+
+
+cache:     ~
+common:    ~
+flash:     ~
+execution: ~

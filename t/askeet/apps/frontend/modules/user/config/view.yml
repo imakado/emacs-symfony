@@ -1,0 +1,11 @@
+voteSuccess:
+  has_layout: off
+
+interestedSuccess:
+  has_layout: off
+
+reportQuestionSuccess:
+  has_layout: off
+
+reportAnswerSuccess:
+  has_layout: off

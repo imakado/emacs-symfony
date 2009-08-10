@@ -1,0 +1,537 @@
+<?xml version="1.0" ?>
+<xliff version="1.0">
+  <file orginal="global" source-language="en_US" datatype="plaintext">
+    <body>
+      
+      <!-- global layout -->
+
+      <trans-unit id="2001">
+        <source>%1% profile</source>
+        <target>profil de %1%</target>
+      </trans-unit>
+      
+      <trans-unit id="2002">
+        <source>sign out</source>
+        <target>déconnexion</target>
+      </trans-unit>
+      
+      <trans-unit id="2003">
+        <source>sign in / register</source>
+        <target>s'identifier / s'enregistrer</target>
+      </trans-unit>
+      
+      <trans-unit id="2004">
+        <source>about</source>
+        <target>à propos de</target>
+      </trans-unit>
+      
+      <trans-unit id="2005">
+        <source>please sign-in first</source>
+        <target>veuillez vous connecter</target>
+      </trans-unit>
+      
+      <trans-unit id="2006">
+        <source>nickname:</source>
+        <target>identifiant :</target>
+      </trans-unit>
+      
+      <trans-unit id="2007">
+        <source>password:</source>
+        <target>mot de passe :</target>
+      </trans-unit>
+      
+      <trans-unit id="2008">
+        <source>login</source>
+        <target>s'identifier</target>
+      </trans-unit>
+      
+      <trans-unit id="2009">
+        <source>cancel</source>
+        <target>annuler</target>
+      </trans-unit>
+      
+      <trans-unit id="2010">
+        <source>powered by %1%</source>
+        <target>booster par %1%</target>
+      </trans-unit>
+      
+      <trans-unit id="2011">
+        <source>ask %1%it%2% - find %1%it%2% - answer %1%it%2%</source>
+        <target>la %1%réponse%2% à vos %1%questions%2%</target>
+      </trans-unit>
+
+      <!-- sidebar module -->
+
+      <trans-unit id="3001">
+        <source>administration</source>
+        <target>administration</target>
+      </trans-unit>
+      
+      <trans-unit id="3002">
+        <source>moderator candidates</source>
+        <target>candidats pour la modération</target>
+      </trans-unit>
+      
+      <trans-unit id="3003">
+        <source>moderator list</source>
+        <target>liste des modérateurs</target>
+      </trans-unit>
+      
+      <trans-unit id="3004">
+        <source>administrator list</source>
+        <target>liste des administrateurs</target>
+      </trans-unit>
+      
+      <trans-unit id="3005">
+        <source>problematic users</source>
+        <target>utilisateurs problématiques</target>
+      </trans-unit>
+      
+      <trans-unit id="3006">
+        <source>moderation</source>
+        <target>modération</target>
+      </trans-unit>
+      
+      <trans-unit id="3007">
+        <source>reported questions</source>
+        <target>questions signalées</target>
+      </trans-unit>
+      
+      <trans-unit id="3008">
+        <source>reported answers</source>
+        <target>réponses signalées</target>
+      </trans-unit>
+      
+      <trans-unit id="3009">
+        <source>unpopular tags</source>
+        <target>tags rares</target>
+      </trans-unit>
+      
+      <trans-unit id="3010">
+        <source>latest questions</source>
+        <target>denières questions</target>
+      </trans-unit>
+      
+      <trans-unit id="3011">
+        <source>latest answers</source>
+        <target>dernières réponses</target>
+      </trans-unit>
+      
+      <trans-unit id="3012">
+        <source>ask a new question</source>
+        <target>poser une question</target>
+      </trans-unit>
+      
+      <trans-unit id="3013">
+        <source>popular tags</source>
+        <target>tags populaires</target>
+      </trans-unit>
+      
+      <trans-unit id="3014">
+        <source>find it</source>
+        <target>trouver</target>
+      </trans-unit>
+      
+      <trans-unit id="3015">
+        <source>browse askeet</source>
+        <target>naviguer dans askeet</target>
+      </trans-unit>
+      
+      <trans-unit id="3016">
+        <source>question tags</source>
+        <target>tags pour la question</target>
+      </trans-unit>
+      
+      <trans-unit id="3017">
+        <source>add your own:</source>
+        <target>ajouter un tag :</target>
+      </trans-unit>
+      
+      <trans-unit id="3018">
+        <source>more popular tags</source>
+        <target>plus de tags populaires</target>
+      </trans-unit>
+      
+      
+      <!-- answer module -->
+      
+      <trans-unit id="4001">
+        <source>answered by %1% on %2%</source>
+        <target>réponse par %1% le %2%</target>
+      </trans-unit>
+      
+      <trans-unit id="4002">
+        <source>author:</source>
+        <target>auteur :</target>
+      </trans-unit>
+      
+      <trans-unit id="4003">
+        <source>anonymous coward</source>
+        <target>utilisateur anonyme</target>
+      </trans-unit>
+      
+      <trans-unit id="4004">
+        <source>login</source>
+        <target>s'identifier</target>
+      </trans-unit>
+      
+      <trans-unit id="4005">
+        <source>your answer:</source>
+        <target>votre réponse :</target>
+      </trans-unit>
+      
+      <trans-unit id="4006">
+        <source>recent answers</source>
+        <target>réponses récentes</target>
+      </trans-unit>
+      
+      <!-- administrator module -->
+      
+      <trans-unit id="5001">
+        <source>moderator</source>
+        <target>modérateur</target>
+      </trans-unit>
+      
+      <trans-unit id="5002">
+        <source>administrator</source>
+        <target>administrateur</target>
+      </trans-unit>
+      
+      <trans-unit id="5003">
+        <source>delete user</source>
+        <target>supprimer l'utilisateur</target>
+      </trans-unit>
+      
+      <!-- api module -->
+
+
+      <!-- content module -->
+      
+      <trans-unit id="15001">
+        <source>basic %1% formatting allowed</source>
+        <target>formattage %1% autorisé</target>
+      </trans-unit>
+      
+      
+      <!-- feed module -->
+      
+      
+      <!-- mail module -->
+      
+      
+      
+      <!-- moderator module -->
+      
+      <trans-unit id="10001">
+        <source>%1% reports</source>
+        <target>%1% signals</target>
+      </trans-unit>
+      
+      <trans-unit id="10002">
+        <source>reset reports</source>
+        <target>réinitialiser les signals</target>
+      </trans-unit>
+      
+      <trans-unit id="10003">
+        <source>delete answer</source>
+        <target>supprimer la réponse</target>
+      </trans-unit>
+      
+      <trans-unit id="10004">
+        <source>Are you sure you want to reset the report spam counter for this answer?</source>
+        <target>Etes-vous sûr de vouloir réinitialiser le nombre de signals pour cette réponse ?</target>
+      </trans-unit>
+      
+      <trans-unit id="10005">
+        <source>Are you sure you want to delete this answer?</source>
+        <target>Etes-vous sûr de vouloir supprimer cette réponse ?</target>
+      </trans-unit>
+      
+      <trans-unit id="10006">
+        <source>delete question</source>
+        <target>supprimer la question</target>
+      </trans-unit>
+      
+      <trans-unit id="10007">
+        <source>Are you sure you want to reset the report spam counter for this question?</source>
+        <target>Etes-vous sûr de vouloir réinitialiser le nombre de signals pour cette question ?</target>
+      </trans-unit>
+      
+      <trans-unit id="10008">
+        <source>Are you sure you want to delete this question?</source>
+        <target>Etes-vous sûr de vouloir supprimer cette question ?</target>
+      </trans-unit>
+      
+      <trans-unit id="10009">
+        <source>answers reported as spam</source>
+        <target>réponses signalées comme spam</target>
+      </trans-unit>
+      
+      <trans-unit id="10010">
+        <source>questions reported as spam</source>
+        <target>questions signalées comme spam</target>
+      </trans-unit>
+      
+      <trans-unit id="10011">
+        <source>delete tag</source>
+        <target>supprimer le tag</target>
+      </trans-unit>
+      
+      <trans-unit id="10012">
+        <source>Are you sure you want to delete this tag?</source>
+        <target>Etes-vous sûr de vouloir supprimer ce tag ?</target>
+      </trans-unit>
+      
+      <!-- tag module -->
+      
+      <trans-unit id="11001">
+        <source>Are you sure you want to delete this tag for this question?</source>
+        <target>Etes-vous sût de vouloir supprimer le tag pour cette question ?</target>
+      </trans-unit>
+      
+      <trans-unit id="11002">
+        <source>popular questions for tag "%1%"</source>
+        <target>questions populaires pour le tag "%1%"</target>
+      </trans-unit>
+      
+      <!-- user module -->
+
+      <trans-unit id="12001">
+        <source>asked by %1% %2% ago</source>
+        <target>posée par %1% il y a %2%</target>
+      </trans-unit>
+      
+      <trans-unit id="12002">
+        <source>%1% askeet users are interested by this question</source>
+        <target>%1% utilisateurs d'askeet intéressés par cette question</target>
+      </trans-unit>
+      
+      <trans-unit id="12003">
+        <source>Registration is free and required only to create a new question or rate an answer.</source>
+        <target>L'inscription est gratuite et nécessaire pour pouvoir poser une question ou voter sur les réponses.</target>
+      </trans-unit>
+      
+      <trans-unit id="12004">
+        <source>forgot your password?</source>
+        <target>vous avez oublié votre mot de passe ?</target>
+      </trans-unit>
+      
+      <trans-unit id="12005">
+        <source>click here to create a new account</source>
+        <target>cliquez ici pour créer un nouveau compte</target>
+      </trans-unit>
+      
+      <trans-unit id="12006">
+        <source>confirm your password:</source>
+        <target>confirmer votre mot de passe :</target>
+      </trans-unit>
+      
+      <trans-unit id="12007">
+        <source>your email:</source>
+        <target>votre courriel :</target>
+      </trans-unit>
+      
+      <trans-unit id="12008">
+        <source>askeet will never disclose this address to a third party</source>
+        <target>askeet s'interdit de revendre votre courriel à des tierces personnes</target>
+      </trans-unit>
+      
+      <trans-unit id="12009">
+        <source>sign in</source>
+        <target>s'identifier</target>
+      </trans-unit>
+      
+      <trans-unit id="12010">
+        <source>Confirmation - login information sent</source>
+        <target>Confirmation - vos identifiants vous ont été envoyés</target>
+      </trans-unit>
+      
+      <trans-unit id="12011">
+        <source>Your login information was sent to</source>
+        <target>Vos identifiants ont été envoyés à l'adresse suivante</target>
+      </trans-unit>
+      
+      <trans-unit id="12012">
+        <source>You should receive it shortly, so you can proceed to the %1%.</source>
+        <target>Vous devriez les recevoir très rapidement pour vous permettre de vous logguer sur la </target>
+      </trans-unit>
+      
+      <trans-unit id="12013">
+        <source>login page</source>
+        <target>page d'identification</target>
+      </trans-unit>
+      
+      <trans-unit id="12014">
+        <source>receive your login details by email</source>
+        <target>recevez vos identifiants par courriel</target>
+      </trans-unit>
+      
+      <trans-unit id="12015">
+        <source>Did you forget your password?</source>
+        <target>Avez-vous oublié votre mot de passe ?</target>
+      </trans-unit>
+      
+      <trans-unit id="12016">
+        <source>Enter your email to receive your login details:</source>
+        <target>Saisissez votre courriel pour recevoir vos identifiants :</target>
+      </trans-unit>
+      
+      <trans-unit id="12017">
+        <source>send it</source>
+        <target>recevoir</target>
+      </trans-unit>
+      
+      <trans-unit id="12018">
+        <source>%1%'s profile</source>
+        <target>profil de %1%</target>
+      </trans-unit>
+      
+      <trans-unit id="12019">
+        <source>first name:</source>
+        <target>prénom :</target>
+      </trans-unit>
+      
+      <trans-unit id="12020">
+        <source>last name</source>
+        <target>nom :</target>
+      </trans-unit>
+      
+      <trans-unit id="12021">
+        <source>paypal account?</source>
+        <target>compte paypal ?</target>
+      </trans-unit>
+      
+      <trans-unit id="12022">
+        <source>do you want to be a moderator?</source>
+        <target>souhaitez-vous devenir modérateur ?</target>
+      </trans-unit>
+      
+      <trans-unit id="12023">
+        <source>update it</source>
+        <target>mettre à jour</target>
+      </trans-unit>
+      
+      <trans-unit id="12024">
+        <source>If you appreciated this user's contributions, you can grant him a small donation.</source>
+        <target>Si vous appréciez les contributions de cet utilisateur, vous pouvez lui faire une donation.</target>
+      </trans-unit>
+      
+      <trans-unit id="12035">
+        <source>tags</source>
+        <target>tags</target>
+      </trans-unit>
+      
+      <trans-unit id="12036">
+        <source>contributions</source>
+        <target>contributions</target>
+      </trans-unit>
+      
+      <trans-unit id="12037">
+        <source>posted on %1%</source>
+        <target>répondue le %1%</target>
+      </trans-unit>
+      
+      <trans-unit id="12038">
+        <source>questions</source>
+        <target>questions</target>
+      </trans-unit>
+      
+      <trans-unit id="12039">
+        <source>submitted on %1%</source>
+        <target>posée le %1%</target>
+      </trans-unit>
+      
+      <trans-unit id="12040">
+        <source>interests</source>
+        <target>intérêts</target>
+      </trans-unit>
+      
+      <trans-unit id="12041">
+        <source>passwords do not match</source>
+        <target>les mots de passe ne correspondent pas</target>
+      </trans-unit>
+
+      <trans-unit id="12042">
+        <source>nickname must be 5 or more characters</source>
+        <target>l'identifiant doit comporter au moins 5 caractères</target>
+      </trans-unit>
+      
+      <trans-unit id="12043">
+        <source>an account with this nickname already exists</source>
+        <target>un compte avec cet identifiant existe déjà</target>
+      </trans-unit>
+      
+      <trans-unit id="12044">
+        <source>password must be 6 or more characters</source>
+        <target>votre mot de passe doit faire au moins 6 caractères</target>
+      </trans-unit>
+      
+      <trans-unit id="12045">
+        <source>password must be 12 or less characters</source>
+        <target>votre mot de passe doit faire moins de 12 caractères</target>
+      </trans-unit>
+      
+      <trans-unit id="12046">
+        <source>email is invalid</source>
+        <target>votre courriel est invalide</target>
+      </trans-unit>
+      
+      <trans-unit id="12047">
+        <source>your password is required</source>
+        <target>votre mot de passe est obligatoire</target>
+      </trans-unit>
+      
+      <trans-unit id="12048">
+        <source>this account does not exist or you entered a wrong password</source>
+        <target>ce compte n'existe pas ou vous avez entré un mauvais mot de passe</target>
+      </trans-unit>
+      
+      <trans-unit id="12049">
+        <source>you must provide an email</source>
+        <target>vous devez saisir un courriel</target>
+      </trans-unit>
+      
+      <trans-unit id="12050">
+        <source>you didn't enter a valid email address (for example: name@domain.com). Please try again.</source>
+        <target>vous devez saisir un courriel valide (par exemple: nom@domaine.com). Veuillez réessayer.</target>
+      </trans-unit>
+
+      <!-- answer helper -->
+
+      <trans-unit id="13001">
+        <source>report to moderator</source>
+        <target>signaler aux modérateurs</target>
+      </trans-unit>
+      
+      <trans-unit id="13002">
+        <source>reported as spam</source>
+        <target>signalé comme spam</target>
+      </trans-unit>
+
+      <!-- global helper -->
+    
+      
+  
+      <!-- question helper -->
+  
+  
+      <!-- user helper -->
+      
+      <trans-unit id="14001">
+        <source>interested!</source>
+        <target>intéressé !</target>
+      </trans-unit>
+      
+      <trans-unit id="14002">
+        <source>interested?</source>
+        <target>intéressé ?</target>
+      </trans-unit>
+      
+      <trans-unit id="14003">
+        <source>anonymous</source>
+        <target>utilisateur anonyme</target>
+      </trans-unit>
+      
+    </body>
+  </file>
+</xliff>

@@ -1,0 +1,22 @@
+methods:
+  post: [title, body, tag]
+
+names:
+  title:
+    required:      Yes
+    required_msg:  you must give a title to your question
+
+  body:
+    required:     Yes
+    required_msg: you must provide a brief context for your question
+    validators:   bodyValidator
+
+  tag:
+    required:     Yes
+    required_msg: you must provide some tags for your question
+
+bodyValidator:
+    class:        sfStringValidator
+    param:
+      min:        10
+      min_error:  please, give some more details

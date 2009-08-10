@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <database package="lib.model" name="propel" defaultIdMethod="native">
+   <table name="ask_question" phpName="Question">
+     <column name="id" type="integer" required="true" primaryKey="true" autoincrement="true" />
+     <column name="user_id" type="integer" />
+     <foreign-key foreignTable="ask_user">
+       <reference local="user_id" foreign="id"/>
+     </foreign-key>
+     <column name="title" type="longvarchar" />
+     <column name="stripped_title" type="longvarchar" />
+     <column name="body" type="longvarchar" />
+     <column name="html_body" type="longvarchar" />
+     <column name="interested_users" type="integer" default="0" />
+     <column name="reports" type="integer" default="0" />
+     <column name="created_at" type="timestamp" />
+     <column name="updated_at" type="timestamp" />
+   </table>
+
+   <table name="ask_answer" phpName="Answer">
+     <column name="id" type="integer" required="true" primaryKey="true" autoincrement="true" />
+     <column name="question_id" type="integer" />
+     <foreign-key foreignTable="ask_question" onDelete="cascade">
+       <reference local="question_id" foreign="id"/>
+     </foreign-key>
+     <column name="user_id" type="integer" />
+     <foreign-key foreignTable="ask_user">
+       <reference local="user_id" foreign="id"/>
+     </foreign-key>
+     <column name="body" type="longvarchar" />
+     <column name="html_body" type="longvarchar" />
+     <column name="relevancy_up" type="integer" default="0" />
+     <column name="relevancy_down" type="integer" default="0" />
+     <column name="reports" type="integer" default="0" />
+     <column name="created_at" type="timestamp" />
+   </table>
+
+   <table name="ask_user" phpName="User">
+     <column name="id" type="integer" required="true" primaryKey="true" autoincrement="true" />
+     <column name="nickname" type="varchar" size="50" />
+     <column name="first_name" type="varchar" size="100" />
+     <column name="last_name" type="varchar" size="100" />
+     <column name="email" type="varchar" size="100" />
+     <column name="sha1_password" type="varchar" size="40" />
+     <column name="salt" type="varchar" size="32" />
+     <column name="has_paypal" type="boolean" default="0" />
+     <column name="want_to_be_moderator" type="boolean" default="0" />
+     <column name="is_moderator" type="boolean" default="0" />
+     <column name="is_administrator" type="boolean" default="0" />
+     <column name="deletions" type="integer" default="0" />
+     <column name="created_at" type="timestamp" />
+   </table>
+
+   <table name="ask_interest" phpName="Interest">
+     <column name="question_id" type="integer" primaryKey="true" />
+     <foreign-key foreignTable="ask_question" onDelete="cascade">
+       <reference local="question_id" foreign="id"/>
+     </foreign-key>
+     <column name="user_id" type="integer" primaryKey="true" />
+     <foreign-key foreignTable="ask_user">
+       <reference local="user_id" foreign="id"/>
+     </foreign-key>
+     <column name="created_at" type="timestamp" />
+   </table>
+
+   <table name="ask_relevancy" phpName="Relevancy">
+     <column name="answer_id" type="integer" primaryKey="true" />
+     <foreign-key foreignTable="ask_answer" onDelete="cascade">
+       <reference local="answer_id" foreign="id"/>
+     </foreign-key>
+     <column name="user_id" type="integer" primaryKey="true" />
+     <foreign-key foreignTable="ask_user">
+       <reference local="user_id" foreign="id"/>
+     </foreign-key>
+     <column name="score" type="integer" />
+     <column name="created_at" type="timestamp" />
+   </table>
+
+   <table name="ask_question_tag" phpName="QuestionTag">
+     <column name="question_id" type="integer" primaryKey="true" />
+     <foreign-key foreignTable="ask_question" onDelete="cascade">
+       <reference local="question_id" foreign="id" />
+     </foreign-key>
+     <column name="user_id" type="integer" primaryKey="true" />
+     <foreign-key foreignTable="ask_user">
+       <reference local="user_id" foreign="id" />
+     </foreign-key>
+     <column name="created_at" type="timestamp" />
+     <column name="tag" type="varchar" size="100" />
+     <column name="normalized_tag" type="varchar" size="100" primaryKey="true" />
+     <index name="normalized_tag_index">
+       <index-column name="normalized_tag" />
+     </index>
+   </table>
+
+   <table name="ask_search_index" phpName="SearchIndex">
+     <column name="question_id" type="integer" />
+     <foreign-key foreignTable="ask_question" onDelete="cascade">
+       <reference local="question_id" foreign="id" />
+     </foreign-key>
+     <column name="word" type="varchar" size="255" />
+     <index name="word_index">
+       <index-column name="word" />
+     </index>
+     <column name="weight" type="integer" />
+   </table>
+   
+   <table name="ask_report_question" phpName="ReportQuestion">
+     <column name="question_id" type="integer" primaryKey="true" />
+     <foreign-key foreignTable="ask_question" onDelete="cascade">
+       <reference local="question_id" foreign="id" />
+     </foreign-key>
+     <column name="user_id" type="integer" primaryKey="true" />
+     <foreign-key foreignTable="ask_user">
+       <reference local="user_id" foreign="id" />
+     </foreign-key>
+     <column name="created_at" type="timestamp" />
+   </table>
+
+   <table name="ask_report_answer" phpName="ReportAnswer">
+     <column name="answer_id" type="integer" primaryKey="true" />
+     <foreign-key foreignTable="ask_answer" onDelete="cascade">
+       <reference local="answer_id" foreign="id" />
+     </foreign-key>
+     <column name="user_id" type="integer" primaryKey="true" />
+     <foreign-key foreignTable="ask_user">
+       <reference local="user_id" foreign="id" />
+     </foreign-key>
+     <column name="created_at" type="timestamp" />
+   </table>
+
+ </database>

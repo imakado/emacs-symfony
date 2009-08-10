@@ -1,0 +1,11 @@
+autocompleteSuccess:
+  has_layout: off
+  slots:      []
+
+addSuccess:
+  has_layout: off
+  slots:      []
+
+removeSuccess:
+  has_layout: off
+  slots:      []

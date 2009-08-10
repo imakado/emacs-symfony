@@ -1,0 +1,11 @@
+moderatorsSuccess:
+  template: users
+
+administratorsSuccess:
+  template: users
+
+moderatorCandidatesSuccess:
+  template: users
+
+problematicUsersSuccess:
+  template: users

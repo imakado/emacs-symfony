@@ -1,0 +1,10 @@
+prod:
+  level:  warning
+
+dev:
+  
+test:
+
+all:
+#  enabled: on
+#  level:  debug

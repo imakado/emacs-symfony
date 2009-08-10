@@ -1,0 +1,18 @@
+# default values
+all:
+  pager:
+    homepage_max:        10
+    answers_max:         10
+    users_max:           10
+
+  feed:
+    max_questions:       10
+
+  search:
+    body_weight:         1
+    title_weight:        2
+    tag_weight:          3
+    results_max:         10
+
+  .global:
+    universe:            on

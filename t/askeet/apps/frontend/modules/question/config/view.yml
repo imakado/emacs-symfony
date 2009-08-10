@@ -1,0 +1,3 @@
+showSuccess:
+  components:
+    sidebar: [sidebar, question]

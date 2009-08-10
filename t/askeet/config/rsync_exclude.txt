@@ -1,0 +1,9 @@
+stats
+.svn
+web/uploads
+cache
+log
+apps/frontend/config/databases.yml
+web/frontend_dev.php
+lib/symfony
+data/symfony

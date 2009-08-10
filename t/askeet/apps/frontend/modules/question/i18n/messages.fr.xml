@@ -1,0 +1,133 @@
+<?xml version="1.0" ?>
+<xliff version="1.0">
+  <file orginal="global" source-language="en_US" datatype="plaintext">
+    <body>
+
+      <trans-unit id="1001">
+        <source>popular questions</source>
+        <target>questions populaires</target>
+      </trans-unit>
+
+      <trans-unit id="1002">
+        <source>asked by %1% on %2%</source>
+        <target>posée par %1% le %2%</target>
+      </trans-unit>
+
+      <trans-unit id="1003">
+        <source>%1% answers</source>
+        <target>%1% réponses</target>
+      </trans-unit>
+
+      <trans-unit id="1004">
+        <source>%1% answer</source>
+        <target>%1% réponse</target>
+      </trans-unit>
+
+      <trans-unit id="1005">
+        <source>answer it</source>
+        <target>répondre</target>
+      </trans-unit>
+
+      <trans-unit id="1006">
+        <source>tags:</source>
+        <target>tags :</target>
+      </trans-unit>
+
+      <trans-unit id="1007">
+        <source>search with all words</source>
+        <target>rechercher avec tous les mots</target>
+      </trans-unit>
+
+      <trans-unit id="1008">
+        <source>search it</source>
+        <target>rechercher</target>
+      </trans-unit>
+
+      <trans-unit id="1009">
+        <source>ask a question</source>
+        <target>poser une question</target>
+      </trans-unit>
+
+      <trans-unit id="1010">
+        <source>Have you looked for similar questions? Check if a related question already exists: The more interesting a question is, the more people will be willing to answer it.</source>
+        <target>Avez-vous regardé si quelqu'un a déjà posé une question similaire ? Recherchez une question approchante à la vôte : Plus vous votez pour une question, plus vous avez de chance que quelqu'un y répondra.</target>
+      </trans-unit>
+
+      <trans-unit id="1011">
+        <source>Be as accurate as you can when giving a title to your question. Keep it short and put the details in the question body.</source>
+        <target>Soyez le plus précis possible sur le titre de votre question. Restez concis et mettez plus de détails dans la description de votre question.</target>
+      </trans-unit>
+
+      <trans-unit id="1012">
+        <source>question:</source>
+        <target>question :</target>
+      </trans-unit>
+      
+      <trans-unit id="1013">
+        <source>describe it:</source>
+        <target>description :</target>
+      </trans-unit>
+      
+      <trans-unit id="1015">
+        <source>example: askeet "how to"</source>
+        <target>exemple : askeet "how to"</target>
+      </trans-unit>
+
+      <trans-unit id="1016">
+        <source>ask it</source>
+        <target>poser la question</target>
+      </trans-unit>
+      
+      <trans-unit id="1017">
+        <source>recent questions</source>
+        <target>questions récentes</target>
+      </trans-unit>
+      
+      <trans-unit id="1018">
+        <source>There is no more result to your search.</source>
+        <target>Il n'y a plus d'autre réponse à votre recherche.</target>
+      </trans-unit>
+      
+      <trans-unit id="1019">
+        <source>Sorry, there is no question matching your search terms.</source>
+        <target>Désolé, aucune réponse ne répond à vos critères de recherche.</target>
+      </trans-unit>
+      
+      <trans-unit id="1020">
+        <source>more results</source>
+        <target>plus de résultats</target>
+      </trans-unit>
+      
+      <trans-unit id="1021">
+        <source>Answers</source>
+        <target>Réponses</target>
+      </trans-unit>
+      
+      <trans-unit id="1022">
+        <source>you must give a title to your question</source>
+        <target>vous devez donner un titre à votre question</target>
+      </trans-unit>
+      
+      <trans-unit id="1023">
+        <source>you must provide a brief context for your question</source>
+        <target>vous devez décrire brièvement votre question</target>
+      </trans-unit>
+      
+      <trans-unit id="1024">
+        <source>you must provide some tags for your question</source>
+        <target>vous devez ajouter un ou plusieurs tags à votre question</target>
+      </trans-unit>
+      
+      <trans-unit id="1025">
+        <source>please, give some more details</source>
+        <target>veuillez mettre un peu plus de détails sur votre question</target>
+      </trans-unit>
+      
+      <trans-unit id="1026">
+        <source>Are you sure you want to delete this user and all his contributions?</source>
+        <target>Etes-vous sûr de vouloir supprimer cet utilisateur et toutes ses contributions ?</target>
+      </trans-unit>
+
+    </body>
+  </file>
+</xliff>

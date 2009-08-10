@@ -1,0 +1,3 @@
+all:
+  default_culture: en
+  debug:           off

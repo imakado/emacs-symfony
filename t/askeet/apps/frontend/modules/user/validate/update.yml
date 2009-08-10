@@ -1,0 +1,31 @@
+methods:
+  post:  [email, password]
+
+names:
+  email:
+    required:     Yes
+    required_msg: email is required
+    validators:   emailValidator
+
+  password:
+    required:     No
+    validators:   passwordValidator, passwordBisValidator
+
+passwordValidator:
+    class: sfStringValidator
+    param:
+      min:        6
+      min_error:  password must be 6 or more characters
+      max:        12
+      max_error:  password must be 12 or less characters
+
+passwordBisValidator:
+    class: sfCompareValidator
+    param:
+      check:          password_bis
+      compare_error:  passwords do not match
+
+emailValidator:
+    class: sfEmailValidator
+    param:
+      email_error:  email is invalid

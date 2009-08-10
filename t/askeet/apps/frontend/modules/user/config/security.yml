@@ -1,0 +1,18 @@
+interested:
+  is_secure:   on
+  credentials: subscriber
+
+vote:
+  is_secure:   on
+  credentials: subscriber
+
+reportQuestion:
+  is_secure:   on
+  credentials: subscriber
+
+reportAnswer:
+  is_secure:   on
+  credentials: subscriber
+
+all:
+  is_secure:   off

@@ -1,0 +1,6 @@
+popular:
+  enabled:    on
+  with_layout: false
+
+all:
+  lifeTime:   600

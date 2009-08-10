@@ -1,0 +1,32 @@
+About askeet
+============
+
+Askeet is a **community based Q&A repository**.
+
+Anyone can post a question about any subject, or answer an existing question.
+Registration and use are completely free.
+If you need an answer, ask your question, register to its RSS feed of answers, and just wait
+until your news aggregator pops out with an answer.
+Questions and answers can be rated, so that the most interesting questions and the most
+useful answers come first. If you have knowledge to share, pay askeet a visit from time to time,
+you might even earn some money.
+
+
+Askeet is also an open-source software developed in PHP.
+Version history, bug tracking, wiki and browsable source are available in the [askeet trac](http://trac.askeet.com/).
+Download, adaptation and commercial distribution are free, according to the MIT license.
+
+
+Easy to install and to customize, askeet may be the solution you are looking for if you need a FAQ section on your Intranet, or for a mini knowledge base for your community.
+If you are interested in commercial support or development of additional features, contact fabien.potencier (at) sensio.com.
+This has already been done for several clients, and you can see the [gutefrage](http://www.gutefrage.net) website for an example of the possible customizations of askeet.
+
+
+Askeet is also the result of a 24-days tutorial called 
+the [symfony advent calendar](http://www.symfony-project.com/askeet), and issued on December 2005 to 
+illustrate agile development of a web 2.0 application in PHP with 
+the [symfony framework](http://www.symfony-project.com/). Reading the tutorial will introduce you to 
+symfony and explain all the code behind the askeet application.
+
+
+Askeet is published by Sensio and the symfony development team.

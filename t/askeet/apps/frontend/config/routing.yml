@@ -1,0 +1,139 @@
+# question
+question:
+  url:   /question/:stripped_title
+  param: { module: question, action: show }
+
+frontpage_questions:
+  url:   /front/:page
+  param: { module: question, action: frontpage, page: 1 }
+
+popular_questions:
+  url:   /index/:page
+  param: { module: question, action: list, page: 1 }
+
+recent_questions:
+  url:   /recent/:page
+  param: { module: question, action: recent, page: 1 }
+
+add_question:
+  url:   /add_question
+  param: { module: question, action: add }
+
+search_question:
+  url:   /search/*
+  param: { module: question, action: search }
+
+# answers
+recent_answers:
+  url:   /recent/answers/:page
+  param: { module: answer, action: recent, page: 1 }
+
+add_answer:
+  url:   /add_anwser
+  param: { module: answer, action: add }
+
+answers:
+  url:   /question/:stripped_title/page/:page
+  param: { module: question, action: show, page: 1 }
+
+# user
+user_interests:
+  url:   /question/:stripped_title/interests/:page
+  param: { module: user, action: listInterestedBy }
+
+user_profile:
+  url:   /user/:nickname
+  param: { module: user, action: show }
+
+user_update:
+  url:   /update_user
+  param: { module: user, action: update }
+
+current_user_profile:
+  url:   /user
+  param: { module: user, action: show }
+
+add_account:
+  url:   /add_user
+  param: { module: user, action: add }
+
+user_require_password:
+  url:   /password_request
+  param: { module: user, action: passwordRequest }
+
+user_report_question:
+  url:   /report_question/:id
+  param: { module: user, action: reportQuestion }
+
+user_report_answer:
+  url:   /report_answer/:id
+  param: { module: user, action: reportAnswer }
+
+# login
+login:
+  url:   /login
+  param: { module: user, action: login }
+
+logout:
+  url:   /logout
+  param: { module: user, action: logout }
+
+# tag
+tag:
+  url:   /tag/:tag
+  param: { module: tag, action: show }
+
+tag_autocomplete:
+  url:   /tag_autocomplete
+  param: { module: tag, action: autocomplete }
+
+tag_add:
+  url:   /tag_add
+  param: { module: tag, action: add }
+
+popular_tags:
+  url:   /popular_tags
+  param: { module: tag, action: popular }
+
+tag_remove:
+  url:   /question/:stripped_title/tag/remove/:tag
+  param: { module: tag, action: remove }
+
+# feeds
+feed_recent_answers:
+  url:   /feed/recent_answers
+  param: { module: feed, action: recentAnswers }
+
+feed_recent_questions:
+  url:   /feed/recent
+  param: { module: feed, action: recent }
+
+feed_question:
+  url:   /feed/question/:stripped_title
+  param: { module: feed, action: question }
+
+# content
+about:
+  url:   /about
+  param: { module: content, action: about }
+
+# api
+api_question:
+  url:   /api/question/:stripped_title
+  param: { module: api, action: question }
+
+# default rules
+homepage:
+  url:   /
+  param: { module: question, action: frontpage }
+
+default_symfony:
+  url:   /symfony/:action/*
+  param: { module: default }
+
+default_index:
+  url:   /:module
+  param: { action: index }
+
+default:
+  url:   /:module/:action/*

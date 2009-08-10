@@ -1,0 +1,52 @@
+methods:
+  post:  [nickname, email, password, password_bis]
+
+names:
+  nickname:
+    required:     Yes
+    required_msg: nickname is required
+    validators:   nicknameValidator, newAccountValidator
+
+  email:
+    required:     Yes
+    required_msg: email is required
+    validators:   emailValidator
+
+  password:
+    required:     Yes
+    required_msg: password is required
+    validators:   passwordValidator, passwordBisValidator
+
+  password_bis:
+    required:     Yes
+    required_msg: passwords do not match
+
+nicknameValidator:
+    class: sfStringValidator
+    param:
+      min:        5
+      min_error:  nickname must be 5 or more characters
+
+newAccountValidator:
+    class: myNewAccountValidator
+    param:
+      newaccount_error:  an account with this nickname already exists
+
+passwordValidator:
+    class: sfStringValidator
+    param:
+      min:        6
+      min_error:  password must be 6 or more characters
+      max:        12
+      max_error:  password must be 12 or less characters
+
+passwordBisValidator:
+    class: sfCompareValidator
+    param:
+      check:          password_bis
+      compare_error:  passwords do not match
+
+emailValidator:
+    class: sfEmailValidator
+    param:
+      email_error:  email is invalid

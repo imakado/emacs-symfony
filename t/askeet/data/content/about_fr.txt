@@ -1,0 +1,28 @@
+A propos d'askeet
+=================
+
+Askeet est un **site communautaire de questions/réponses**.
+
+Tout le monde peut poser une question sur n'importe quel sujet, ou répondre aux questions
+déjà posées sur le site.
+L'enregsitrement et l'utilisation de ce site est complètement gratuite.
+Si vous souhaitez obtenir une réponse, il suffit de poser votre question, de souscrire
+au fil RSS de cette question et d'attendre que votre aggrégateur RSS ne vous informe
+que quelqu'un a répondu à votre question.
+Les questions et les réponses sont classées grâce à vos votes. Si vous avez des connaissances
+à partager, visitez askeet de temps à autres, vous pouvez même gagner de l'argent.
+
+Askeet est également un projet open-source développé en PHP.
+Le téléchargement, l'adaptation et l'utilisation commerciale des sources est libre, sous
+une licence MIT.
+Les sources, un système de ticketing ainsi qu'un wiki sont disponibles sur le [trac d'askeet ](http://trac.askeet.com/).
+Facilement installable et personnalisable, askeet est peut-être la solution pour vos FAQ sur votre
+site ou peut également vous permettre de partager vos connaissances au sein de votre communauté.
+Si vous souhaitez un support commercial, ou une société capable de développer des fonctionnalités supplémentaires, contactez fabien.potencier (at) sensio.com 
+
+Askeet est enfin le résultat d'un tutorial de 24 jours, le [calendrier de l'avant de symfony](http://www.symfony-project.com/askeet), publié en décembre 2005 pour illustrer
+le développement d'une application web 2.0 en PHP avec le 
+[framework symfony](http://www.symfony-project.com/). La lecture de ce tutorial vous permettra
+de découvrir symfony et d'appréhender le code d'askeet.
+
+Askeet est publié par Sensio et l'équipe de développement de symfony.

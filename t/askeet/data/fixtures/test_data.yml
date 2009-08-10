@@ -1,0 +1,119 @@
+User:
+  anonymous:
+    nickname:   anonymous
+    first_name: Anonymous
+    last_name:  Coward
+
+  fabien:
+    nickname:   fabpot
+    first_name: Fabien
+    last_name:  Potencier
+    password:   symfony
+    email:      fp@example.com
+    is_administrator: on
+
+  francois:
+    nickname:   francois
+    first_name: François
+    last_name:  Zaninotto
+    password:   adventcal
+    email:      fz@example.com
+
+Question:
+  q1:
+    title: What shall I do tonight with my girlfriend?
+    user_id: fabien
+    body:  |
+      We shall meet in front of the __Dunkin'Donuts__ before dinner, 
+      and I haven't the slightest idea of what I can do with her. 
+      She's not interested in _programming_, _space opera movies_ nor _insects_.
+      She's kinda cute, so I __really__ need to find something 
+      that will keep her to my side for another evening.
+
+  q2:
+    title: What can I offer to my step mother?
+    user_id: anonymous
+    body:  |
+      My stepmother has everything a stepmother is usually offered
+      (watch, vacuum cleaner, earrings, [del.icio.us](http://del.icio.us) account). 
+      Her birthday comes next week, I am broke, and I know that 
+      if I don't offer her something *sweet*, my girlfriend 
+      won't look at me in the eyes for another month.
+
+  q3:
+    title: How can I generate traffic to my blog?
+    user_id: francois
+    body:  |
+      I have a very swell blog that talks 
+      about my class and mates and pets and favorite movies.
+
+  q4:
+    title: Test4
+    user_id: anonymous
+    body: Test
+
+  q5:
+    title: Test4
+    user_id: anonymous
+    body: Test
+
+  q6:
+    title: Test4
+    user_id: anonymous
+    body: Test
+
+Interest:
+  i1: { user_id: fabien, question_id: q1 }
+  i2: { user_id: francois, question_id: q1 }
+  i3: { user_id: francois, question_id: q2 }
+  i4: { user_id: fabien, question_id: q2 }
+
+Answer:
+  a1_q1:
+    question_id: q1
+    user_id:     francois
+    body:        |
+      You can try to read her poetry. Chicks love that kind of things.
+
+  a2_q1:
+    question_id: q1
+    user_id:     fabien
+    body:        |
+      Don't bring her to a doghnuts shop. Ever. Girls don't like to be
+      seen eating with their fingers - although it's nice. 
+
+  a3_q2:
+    question_id: q2
+    user_id:     fabien
+    body:        |
+      The answer is in the question: buy her a step, so she can 
+      get some exercise and be grateful for the weight she will
+      lose.
+
+  a4_q3:
+    question_id: q3
+    user_id:     fabien
+    body:        |
+      Build it with symfony - and people will love it.
+
+Relevancy:
+  rel1:
+    answer_id: a1_q1
+    user_id:   fabien
+    score:     1
+
+  rel2:
+    answer_id: a1_q1
+    user_id:   francois
+    score:     -1
+
+QuestionTag:
+  t1: { question_id: q1, user_id: fabien, tag: relatives }
+  t2: { question_id: q1, user_id: fabien, tag: girl }
+  t4: { question_id: q1, user_id: francois, tag: activities }
+  t6: { question_id: q2, user_id: francois, tag: 'real life' }
+  t5: { question_id: q2, user_id: fabien, tag: relatives }
+  t5: { question_id: q2, user_id: fabien, tag: present }
+  t6: { question_id: q2, user_id: francois, tag: 'real life' }
+  t7: { question_id: q3, user_id: francois, tag: blog }
+  t8: { question_id: q3, user_id: francois, tag: activities }

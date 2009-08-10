@@ -1,0 +1,23 @@
+default:
+  http_metas:
+    content-type: text/html; charset=utf-8
+
+  metas:
+    title:        askeet! ask questions, find answers
+    robots:       index, follow
+    description:  askeet!, a symfony project built in 24 hours
+    keywords:     symfony, project, askeet, php5, question, answer
+    language:     en
+
+  stylesheets:    [main, layout]
+
+  javascripts:    [%SF_PROTOTYPE_WEB_DIR%/js/prototype.js]
+
+  has_layout:     on
+  layout:         layout
+
+  components:
+    sidebar:      [sidebar, default]
+
+  use_default_slots: on
+

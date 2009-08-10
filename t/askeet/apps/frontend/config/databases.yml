@@ -1,0 +1,11 @@
+all:
+  propel:
+    class:          sfPropelDatabase
+    param:
+      phptype:      mysql
+      hostspec:     localhost
+      database:     askeet
+      username:     root
+      password:     
+      compat_assoc_lower:  true
+      compat_rtrim_string: true
