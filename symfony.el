@@ -83,21 +83,40 @@ e.x,
 
 (defvar sf:number-of-lines-shown-when-opening-log-file 200)
 
+(defmacro* sf:with-root (&body body)
+  (let ((root (gensym)))
+    `(let ((,root (sf:get-project-root)))
+       (when ,root
+         (flet ((sf:get-project-root () ,root))
+           ,@body)))))
+
+(eval-when-compile
+  (def-edebug-spec sf:with-root (&optional body)))
+
+(defmacro* sf:with-root-default-directory (&body body)
+  `(sf:with-root
+    (let ((default-directory (sf:get-project-root)))
+      (progn ,@body))))
+
+(eval-when-compile
+  (def-edebug-spec sf:with-root-default-directory (&optional body)))
+
 (defun sf:project-absolute-path (file-name)
   (assert (stringp file-name))
-  (cond
-   ((file-name-absolute-p file-name)
-    file-name)
-   (t
-    (let ((root-dir (sf:get-project-root)))
-      (if root-dir
-        (sf:catdir root-dir file-name)
-        "")))))
+  (sf:with-root
+   (cond
+    ((file-name-absolute-p file-name)
+     file-name)
+    (t
+     (let ((root-dir (sf:get-project-root)))
+       (if root-dir
+           (sf:catdir root-dir file-name)
+         ""))))))
 
 (defun sf:buffer-type ()
   (loop for (type re-or-fn) in sf:mode-directory-rules
         when (if (stringp re-or-fn)
-                 (string-match (sf:project-absolute-path re-or-fn) (sf:current-directory))
+                 (string-match re-or-fn (sf:current-directory))
                (funcall re-or-fn))
         do (return type)))
 
@@ -177,35 +196,38 @@ e.x,
         (s2 (replace-regexp-in-string (rx bol "/") "" s2)))
     (concat s1 "/" s2)))
 
+(defvar sf:project-cache nil)
 (defun* sf:project-files (&optional clear-cache (include-regexps '(".*")) (exclude-regexps sf:anything-project-exclude-regexps))
   (setq clear-cache (or clear-cache current-prefix-arg))
-  (let ((root-dir (sf:get-project-root)))
-    (unless root-dir
-      (error "this buffer is not symfony project file"))
-    (let ((ap:projects nil))
-      (ap:add-project
-       :name 'symfony
-       :look-for sf:root-detector-fn
-       :grep-extensions '("\\.php"))
-      (when clear-cache
-        (setq ap:--cache
-              (delete-if (lambda (ls) (equal root-dir ls))
-                         ap:--cache
-                         :key 'car)))
-      (lexical-let ((root-dir root-dir))
-        (setq ap:root-directory root-dir)
-        (ap:cache-get-or-set
-         root-dir
-         (lambda ()
-           (message "getting project files...")
-           (let ((include-regexp include-regexps)
-                 (exclude-regexp exclude-regexps))
-             (let* ((files (ap:directory-files-recursively
-                            include-regexp
-                            root-dir
-                            'identity
-                            exclude-regexp)))
-               files))))))))
+  (sf:with-root
+   (let ((root-dir (sf:get-project-root))
+         (ap:--cache sf:project-cache)) ;; use own cache
+     (unless root-dir
+       (error "this buffer is not symfony project file"))
+     (let ((ap:projects nil))
+       (ap:add-project
+        :name 'symfony
+        :look-for sf:root-detector-fn
+        :grep-extensions '("\\.php"))
+       (when clear-cache
+         (setq ap:--cache
+               (delete-if (lambda (ls) (equal root-dir ls))
+                          ap:--cache
+                          :key 'car)))
+       (lexical-let ((root-dir root-dir))
+         (setq ap:root-directory root-dir)
+         (ap:cache-get-or-set
+          root-dir
+          (lambda ()
+            (message "getting project files...")
+            (let ((include-regexp include-regexps)
+                  (exclude-regexp exclude-regexps))
+              (let* ((files (ap:directory-files-recursively
+                             include-regexp
+                             root-dir
+                             'identity
+                             exclude-regexp)))
+                files)))))))))
 
 (defun sf:abs->relative (los)
   (assert (listp los))
@@ -228,8 +250,6 @@ e.x,
     (let ((ret (sf:find-upper-directiory templates-finder)))
       (when ret
         (list (sf:catdir ret sf:TEMPLATES-DIR-NAME))))))
-
-
 
 (defun sf:get-templates-file-by-action-name (action-name)
   "return list of templates or nil
@@ -359,6 +379,35 @@ find file quickly (dont use anything interface)")
                            (real command))
                       `(,display . ,real))))))
 
+(defun sf:remove-if-not-match (re los)
+  (remove-if-not (lambda (s) (string-match re s)) los))
+
+
+(defun sf:get-application-names ()
+  (let ((app-name-re (rx "apps/" (group (+ (not (any "/")))) "/")))
+    (loop for path in (sf:project-files)
+          when (string-match app-name-re path)
+          collect (match-string 1 path) into ret
+          finally return (delete-dups ret))))
+
+
+
+;;;; Create Partial
+(defun sf:create_partial_on_region (&optional start end)
+  (interactive "r")
+  (let ((str (buffer-substring-no-properties start end))
+        (partial-file-name (read-file-name
+                            "partial name: "
+                            (car-safe (sf:get-templates-directory))
+                            )))
+    (when (and partial-file-name (not (string= partial-file-name "")))
+      (delete-region start end)
+      (insert (concat "<?php echo include_partial('"
+                      (file-name-nondirectory (expand-file-name partial-file-name))
+                      "') ?>"))
+      (find-file partial-file-name)
+      (goto-char (point-min))
+      (insert str))))
 
 ;;;; Commands
 ;; Prefix: sf-cmd:
@@ -572,30 +621,113 @@ find file quickly (dont use anything interface)")
 ;;;; Script
 ;; Prefix: sf-script:
 
-;; (defvar sf-script:buffer-name "*Symfony Output*")
-;; (defvar sf-script:history nil)
+(defvar sf-script:buffer-name "*Symfony Output*")
+(defvar sf-script:history nil)
 
-;; (defcustom sf-script:symfony-command nil
-;;   "Symfony command(full path).
-;; IF this variable is nil, \"symfony\" command is searched in PATH")
+(defcustom sf-script:symfony-command nil
+  "Symfony command(full path).
+IF this variable is nil, \"symfony\" command is searched in PATH")
 
-;; (defun sf-script:symfony-command ()
-;;   (cond
-;;    (sf-script:symfony-command
-;;     (file-executable-p sf-script:symfony-command))
-;;    (t
-;;     (let ((command (executable-find "symfony")))
-;;       (or command
-;;           (error "symfony command is not in PATH"))))))
+(defun sf-script:symfony-command ()
+  (cond
+   ((and sf-script:symfony-command
+         (file-executable-p sf-script:symfony-command))
+    sf-script:symfony-command)
+   (t
+    (let ((command (executable-find "symfony")))
+      (or command
+          (error "symfony command is not in PATH"))))))
 
 ;; (defun sf-script:start-process ()
 ;;   )
 
-;; (defun sf-script:run (command params)
-;;   (assert (stringp command))
-;;   (assert (listp params))
-  
-;;   )
+(defcustom sf-script:coding-system nil
+  "this variable is bound to `coding-system-for-read' and `coding-system-for-write'
+in `sf-script:start-process'.
+IF nil, do nothing")
+
+(defun sf-script:process-running-p ()
+  (get-buffer-process sf-script:buffer-name))
+
+(defun sf-script:kill-process ()
+  (interactive)
+  (let ((proc (sf-script:process-running-p)))
+    (when proc
+      (delete-process proc)
+      (message "deleted process"))))
+
+(defun sf-script:process-sentinel (proc message)
+  (when (memq (process-status proc) '(exit signal))
+    (let* ((status-msg (if (zerop (process-exit-status proc)) "successful" "failure"))
+           (msg (format "%s was stopped (%s)."
+                       (process-name proc)
+                       status-msg)))
+      (message (replace-regexp-in-string "\n" "" msg)))))
+
+(defun sf-script:start-process (name buffer-name program &rest args)
+  (let ((coding-system-for-read sf-script:coding-system)
+        (coding-system-for-write sf-script:coding-system))
+    (apply 'start-process-shell-command
+           name
+           buffer-name
+           program
+           args)))
+
+(defun sf-script:initialize-output-mode ()
+  (set (make-local-variable 'font-lock-keywords-only) t)
+  (make-local-variable 'font-lock-defaults)
+  (set (make-local-variable 'scroll-margin) 0)
+  (set (make-local-variable 'scroll-preserve-screen-position) nil)
+  (make-local-variable 'after-change-functions)
+  (symfony-minor-mode t))
+
+(defvar sf-script:output-mode-hook nil)
+(define-derived-mode sf-script:output-mode fundamental-mode "sfOutput"
+  "Major mode to symfony Script Output."
+  (sf-script:initialize-output-mode)
+  (buffer-disable-undo)
+  (setq buffer-read-only t)
+  (run-hooks 'sf-script:output-mode-hook))
+
+(defun sf-script:setup-output-buffer (&optional major-mode)
+  (with-current-buffer (get-buffer sf-script:buffer-name)
+    (let ((buffer-read-only nil))
+      (if (and major-mode (functionp major-mode))
+          (apply major-mode (list))
+        (sf-script:output-mode)))))
+
+(defun sf-script:run (command &optional args major-mode)
+  (assert (stringp command))
+  (assert (listp args))
+  (sf:with-root-default-directory
+   (save-some-buffers)
+   (cond
+    ((sf-script:process-running-p)
+     (message "symfony process already running"))
+    (t
+     (let ((proc (apply 'sf-script:start-process
+                        sf-script:buffer-name;(mapconcat 'identity (cons command args) " ")
+                        sf-script:buffer-name
+                        command
+                        args)))
+       (sf-script:setup-output-buffer major-mode)
+       (set-process-sentinel proc 'sf-script:process-sentinel)
+       ;; return proc
+       proc
+       )))))
+
+
+(defvar sf-script:command-list
+  '("h" "cc""clear-cache" "init-app" "init-module" "init-project" "log-purge" "log-rotate" "plugin-install"
+    "plugin-list" "plugin-uninstall" "plugin-upgrade" "clear-controllers" "sync" "disable" "enable" "freeze"
+    "permissions, fix-perms" "unfreeze"  "propel-build-all" "propel-build-all-load" "propel-build-model" "propel-build-schema"
+    "propel-build-sql" "propel-dump-data" "propel-load-data" "propel-generate-crud" "propel-init-admin" "propel-insert-sql"
+    "propel-convert-yml-schema" "propel-convert-xml-schema" "test-all" "test-functional" "test-unit"))
+
+;;; clear-cache (cc)
+(defvar sf-script:clear-cache-arg-candidates
+  '("template" "config" "i18n"))
+
 
 ;;;; Keybinds
 (sf:define-key "C-p" 'sf-cmd:primary-switch)
@@ -770,6 +902,14 @@ find file quickly (dont use anything interface)")
         (sf:with-current-dir (sf:askeet-path-to "apps/frontend/modules/user/actions" "actions.class.php")
           (sf:buffer-type)))
 
+      (expect 'template
+        (sf:with-current-dir (sf:askeet-path-to "apps/frontend/modules/user/templates/voteSuccess.php")
+          (sf:buffer-type)))
+
+      (expect nil
+        (sf:with-current-dir (sf:askeet-path-to "apps/")
+          (sf:buffer-type)))
+
       (desc "sf:get-specify-minor-mode-string")
       (expect "symfony-action-minor-mode"
         (sf:with-current-dir (sf:askeet-path-to "apps/frontend/modules/user/actions" "actions.class.php")
@@ -834,7 +974,62 @@ find file quickly (dont use anything interface)")
         (file-relative-name
          (sf:with-file-buffer (sf:askeet-path-to "apps/frontend/modules/user/actions" "voteAction.class.php")
            (sf:get-log-directory))))
+
+      (desc "sf:project-absolute-path")
+      (expect "t/askeet/apps/frontend/"
+        (file-relative-name
+         (sf:with-file-buffer (sf:askeet-path-to "apps/frontend/modules/user/actions" "voteAction.class.php")
+           (sf:project-absolute-path "apps/frontend/")
+           )))
+
+      (desc "sf:with-root-default-directory")
+      (expect "t/askeet/"
+        (file-relative-name
+         (let ((default-directory nil))
+           (sf:with-file-buffer (sf:askeet-path-to "apps/frontend/modules/user/actions" "voteAction.class.php")
+             (sf:with-root-default-directory
+              default-directory)))))
+
+      (desc "---- sf-script ----")
+
+      (expect t
+        (processp
+         (sf:with-file-buffer (sf:askeet-path-to "apps/frontend/modules/user/actions" "voteAction.class.php")
+           (let ((perl-bin (executable-find "perl")))
+             ;; skip tests unless find perl bin.
+             (when perl-bin
+               (start-process-shell-command sf-script:buffer-name
+                                            sf-script:buffer-name
+                                            perl-bin
+                                            "-e"
+                                            "'sleep(999999); print \"process end\";'"
+                                            ))))))
+      (expect t
+        (processp
+         (sf-script:process-running-p)))
+
+      (expect "deleted process"
+        (sf-script:kill-process))
+
+      (expect nil
+        (sf-script:process-running-p))
+
+      (desc "---- sf-script clean up ----")
+      (expect nil
+        (while (sf-script:process-running-p)
+          (sf-script:kill-process)))
+
+      (desc "sf:get-application-names")
+      (expect '("frontend")
+        (sf:with-file-buffer (sf:askeet-path-to "apps/frontend/modules/user/actions")
+          (sf:get-application-names)))
+
+      (desc "sf:remove-if-not-match")
+      (expect '("apple")
+        (sf:remove-if-not-match (rx bol "apple" eol) '("banana" "qiwi" "apple" "xxapplexx")))
+
       )))
+
 
 
 (provide 'symfony)
