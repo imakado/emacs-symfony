@@ -44,10 +44,13 @@
 
 (require 'cl)
 (require 'rx)
+(require 'etags)
 (require 'php-mode)
+
 (require 'anything)
 (require 'anything-match-plugin)
 (require 'anything-project)
+(require 'php-completion)
 
 
 ;; i'm not sure, anyone can change this? - IMAKADO
@@ -102,7 +105,6 @@ e.x,
   (def-edebug-spec sf:with-root-default-directory (&optional body)))
 
 (defun sf:project-absolute-path (file-name)
-  (assert (stringp file-name))
   (sf:with-root
    (cond
     ((file-name-absolute-p file-name)
@@ -228,6 +230,9 @@ e.x,
                              'identity
                              exclude-regexp)))
                 files)))))))))
+
+
+
 
 (defun sf:abs->relative (los)
   (assert (listp los))
@@ -409,6 +414,18 @@ find file quickly (dont use anything interface)")
       (goto-char (point-min))
       (insert str))))
 
+;;;; Tags
+(defvar sf:tags-dirs '("apps" "lib"))
+(defvar sf:tags-command "ctags -e -a  -R --php-types=c+f+d+v+i -o %s --langmap=PHP:.php.inc   %s")
+(defvar sf:tags-file-name "TAGS")
+
+(defun sf:make-create-tags-command ()
+  (sf:with-root
+   (let* ((tags-file-name (sf:project-absolute-path sf:tags-file-name))
+          (command (format sf:tags-command sf:tags-file-name
+                           (mapconcat 'identity (mapcar 'sf:project-absolute-path sf:tags-dirs) " "))))
+     command)))
+
 ;;;; Commands
 ;; Prefix: sf-cmd:
 (defun sf-cmd:all-project-files ()
@@ -457,6 +474,21 @@ find file quickly (dont use anything interface)")
     (switch-to-buffer log-buffer)
     (recenter t)))
 
+(defun sf-cmd:create-or-update-tags ()
+  (interactive)
+  (sf:with-root-default-directory
+   (let ((command (sf:make-create-tags-command))
+         (tags-file-path (sf:project-absolute-path sf:tags-file-name)))
+     (when command
+       (shell-command command)
+       (flet ((yes-or-no-p (p) t))
+         (visit-tags-table tags-file-path)
+         )))))
+
+(defun sf-cmd:update-caches ()
+  (interactive)
+  (setq sf:project-cache nil)
+  (sf-cmd:create-or-update-tags))
 
 ;;;; Minor Mode
 (defmacro sf:key-with-prefix (key-kbd-sym)
@@ -653,8 +685,9 @@ IF nil, do nothing")
   (interactive)
   (let ((proc (sf-script:process-running-p)))
     (when proc
-      (delete-process proc)
-      (message "deleted process"))))
+      (prog1 t
+        (delete-process proc)
+        (message "deleted process")))))
 
 (defun sf-script:process-sentinel (proc message)
   (when (memq (process-status proc) '(exit signal))
@@ -743,6 +776,7 @@ IF nil, do nothing")
 (sf:define-key "C-c g T" 'sf-cmd:test-files)
 
 (sf:define-key "C-c l" 'sf-cmd:open-log-file)
+(sf:define-key "C-c C-t" 'sf-cmd:create-or-update-tags)
 
 
 ;;;; Install
@@ -782,6 +816,9 @@ IF nil, do nothing")
      (progn
        ,@body)))
 
+(eval-when-compile
+  (def-edebug-spec sf:with-php-buffer (stringp &rest form)))
+
 (defmacro sf:with-current-dir (dir &rest body)
   (declare (indent 1))
   `(flet ((sf:current-directory () (file-name-directory ,dir)))
@@ -796,6 +833,11 @@ IF nil, do nothing")
 (dont-compile
   (when (fboundp 'expectations)
     (expectations
+      (desc "initialize")
+      (expect t
+        (setq sf:project-cache nil)
+        t)
+
       (desc "case-fold-search")
       (expect t
         (let ((case-fold-search t))
@@ -1008,8 +1050,9 @@ IF nil, do nothing")
         (processp
          (sf-script:process-running-p)))
 
-      (expect "deleted process"
-        (sf-script:kill-process))
+      (expect t
+        (sf:to-bool
+         (sf-script:kill-process)))
 
       (expect nil
         (sf-script:process-running-p))
@@ -1020,14 +1063,60 @@ IF nil, do nothing")
           (sf-script:kill-process)))
 
       (desc "sf:get-application-names")
-      (expect '("frontend")
-        (sf:with-file-buffer (sf:askeet-path-to "apps/frontend/modules/user/actions")
-          (sf:get-application-names)))
+      (expect t
+        (sf:to-bool
+         (member "frontend"
+                 (sf:with-file-buffer (sf:askeet-path-to "apps/frontend/modules/user/actions")
+                   (sf:get-application-names)))))
 
       (desc "sf:remove-if-not-match")
       (expect '("apple")
         (sf:remove-if-not-match (rx bol "apple" eol) '("banana" "qiwi" "apple" "xxapplexx")))
 
+      (desc "sf:project-files using sf:project-cache as ap:--cache")
+      (desc "")
+      (expect nil
+        (let* ((ap:--cache '(("/path/to" "/file1" "/file2")))
+               (tmp-ap:--cache (copy-alist ap:--cache)))
+          (sf:with-current-dir (sf:askeet-path-to "apps/frontend/modules/user/actions" "actions.class.php")
+            (with-stub 
+              (stub ap:cache-get-or-set => ap:--cache)
+              (eq tmp-ap:--cache (sf:project-files))))))
+      (expect t
+        (sf:with-current-dir (sf:askeet-path-to "apps/frontend/modules/user/actions" "actions.class.php")
+          (with-stub 
+            (stub ap:cache-get-or-set => ap:--cache)
+            (eq sf:project-cache (sf:project-files)))))
+
+      (expect t
+        (save-window-excursion
+          (sf:with-current-dir (sf:askeet-path-to "apps/frontend/modules/user/actions" "actions.class.php")
+            (with-stub
+              (stub yes-or-no-p => t)
+              (and (sf-cmd:create-or-update-tags)
+                   (prog1 (file-exists-p (sf:project-absolute-path sf:tags-file-name))
+                     (delete-file (sf:project-absolute-path sf:tags-file-name))
+                     ))))))
+
+      (expect t
+        (sf:to-bool
+         (string-match
+          (rx "ctags -e -a  -R --php-types=c+f+d+v+i -o TAGS --langmap=PHP:.php.inc " (* not-newline) "askeet/apps" (* not-newline) "askeet/lib")
+          (sf:with-current-dir (sf:askeet-path-to "apps/frontend/modules/user/actions" "actions.class.php")
+            (let ((sf:tag-file-name "TAGS")
+                  (sf:tags-dirs '("apps" "lib"))
+                  (sf:tags-command "ctags -e -a  -R --php-types=c+f+d+v+i -o %s --langmap=PHP:.php.inc -f  %s"))
+              (sf:make-create-tags-command)))
+
+          )))
+
+      (desc "php-completion")
+      (desc "tags parser")
+      (expect t
+        (sf:with-current-dir (sf:askeet-path-to "apps/frontend/modules/user/actions" "actions.class.php")
+          (let ((tag (sf-cmd:create-or-update-tags)))
+            (when (and tag (file-exists-p tag))
+              (every 'phpcmp-tag-p (phpcmp-etags-get-tags tag))))))
       )))
 
 
