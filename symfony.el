@@ -26,20 +26,33 @@
 
 ;; tested only on emamcs22
 
+;; some code taken from rails.el
+
+
+;; To run test,
+
+;; git clone git@github.com:imakado/emacs-symfony.git ~/dev/emacs-symfony
+;; cd ~/dev/emacs-symfony
+;; ./run-test.sh
+;; => 0 failures, 0 errors (all tests successful)
+
+
 ;;; Installation:
 
-;; install these libraries:
+;; install requires libraries:
 ;; `anything.el' http://www.emacswiki.org/emacs/anything.el
 ;; `anything-match-plugin.el'  http://www.emacswiki.org/emacs/anything-match-plugin.el
 ;; `anything-project.el' http://github.com/imakado/emacs-symfony/tree/master
-;; `symfony.el' http://github.com/imakado/emacs-symfony/tree/master
+;; `anything-grep'  http://www.emacswiki.org/emacs/anything-grep.el
+
+;; `symfony.el' http://github.com/imakado/emacs-symfony/tree/master (this file)
 
 ;; add these lines to your .emacs file:
 ;; (require 'symfony)
 
 
 ;;; TODO:
-;; - Commands to run symfony command.
+;; - Integration with symfony command.
 ;; - Code Completion
 
 (require 'cl)
@@ -50,6 +63,7 @@
 (require 'anything)
 (require 'anything-match-plugin)
 (require 'anything-project)
+(require 'anything-grep)
 (require 'php-completion)
 
 
@@ -192,7 +206,6 @@ e.x,
     (when (string-match (rx bol (group (+ print)) (regexp "\\(?:[A-Z][a-z]+\\)") eol) s)
       (match-string 1 s)))))
 
-
 (defun sf:catdir (s1 s2)
   (let ((s1 (replace-regexp-in-string (rx "/" eol) "" s1))
         (s2 (replace-regexp-in-string (rx bol "/") "" s2)))
@@ -230,9 +243,6 @@ e.x,
                              'identity
                              exclude-regexp)))
                 files)))))))))
-
-
-
 
 (defun sf:abs->relative (los)
   (assert (listp los))
@@ -285,7 +295,6 @@ find file quickly (dont use anything interface)")
 (defun sf:anything-project-find-file (c)
   (find-file c)
   (ignore-errors (run-hooks 'sf:after-anything-project-action-hook)))
-
 
 (defsubst sf:any-match (regexp-or-regexps file-name)
   (when regexp-or-regexps
@@ -395,8 +404,6 @@ find file quickly (dont use anything interface)")
           collect (match-string 1 path) into ret
           finally return (delete-dups ret))))
 
-
-
 ;;;; Create Partial
 (defun sf:create_partial_on_region (&optional start end)
   (interactive "r")
@@ -418,6 +425,8 @@ find file quickly (dont use anything interface)")
 (defvar sf:tags-dirs '("apps" "lib"))
 (defvar sf:tags-command "ctags -e -a  -R --php-types=c+f+d+v+i -o %s --langmap=PHP:.php.inc   %s")
 (defvar sf:tags-file-name "TAGS")
+(defvar sf:tags-cache nil
+  "list of structure `phpcmp-tag'")
 
 (defun sf:make-create-tags-command ()
   (sf:with-root
@@ -425,6 +434,47 @@ find file quickly (dont use anything interface)")
           (command (format sf:tags-command sf:tags-file-name
                            (mapconcat 'identity (mapcar 'sf:project-absolute-path sf:tags-dirs) " "))))
      command)))
+
+(defun sf:get-tags-file ()
+  "return tags-file full path, when not exsist ask to generate"
+  (let ((tags-file (sf:project-absolute-path sf:tags-file-name)))
+    (cond
+     (tags-file)
+     (t
+      (when (y-or-n-p "no TAGS file. generate? ")
+        (sf-cmd:create-or-update-tags))))))
+
+(defun sf:get-tags-structs ()
+  "list of structure `phpcmp-tag'.
+when sf:tags-cache is set, return it."
+  (cond
+   (sf:tags-cache)
+   (t
+    (let ((tags-file (sf:get-tags-file)))
+      (cond
+       ((null tags-file)
+        (error "no TAGS file!!"))
+       (t
+        (setq sf:tags-cache
+              (phpcmp-etags-get-tags tags-file))))))))
+
+(defun sf:tags-build-class-candidates ()
+  (let ((tags (sf:get-tags-structs)))
+    (loop for tag in tags
+          append (sf:tags-build-class-candidates-1
+                  (phpcmp-tag-classes tag)
+                  (phpcmp-tag-path tag)))))
+
+(defun sf:tags-build-class-candidates-1 (classes file-path)
+  (loop for class in classes
+        append (loop for method in (phpcmp-class-methods class)
+                     collect (cons
+                              (concat (phpcmp-class-name class) " : " method) ;DISPLAY . REAL
+                              file-path))))
+;; (sf:with-current-dir (sf:askeet-path-to "apps/frontend/modules/user/actions" "actions.class.php")
+;;   (sf-cmd:create-or-update-tags)
+;;   (sf-cmd:update-caches)
+;;   (sf:tags-build-class-candidates))
 
 ;;;; Commands
 ;; Prefix: sf-cmd:
@@ -488,6 +538,7 @@ find file quickly (dont use anything interface)")
 (defun sf-cmd:update-caches ()
   (interactive)
   (setq sf:project-cache nil)
+  (setq sf:tags-cache nil)
   (sf-cmd:create-or-update-tags))
 
 ;;;; Minor Mode
@@ -649,7 +700,6 @@ find file quickly (dont use anything interface)")
     (when (and file-path (file-exists-p file-path) (file-readable-p file-path))
       (list file-path))))
 
-
 ;;;; Script
 ;; Prefix: sf-script:
 
@@ -669,9 +719,6 @@ IF this variable is nil, \"symfony\" command is searched in PATH")
     (let ((command (executable-find "symfony")))
       (or command
           (error "symfony command is not in PATH"))))))
-
-;; (defun sf-script:start-process ()
-;;   )
 
 (defcustom sf-script:coding-system nil
   "this variable is bound to `coding-system-for-read' and `coding-system-for-write'
@@ -748,7 +795,6 @@ IF nil, do nothing")
        ;; return proc
        proc
        )))))
-
 
 (defvar sf-script:command-list
   '("h" "cc""clear-cache" "init-app" "init-module" "init-project" "log-purge" "log-rotate" "plugin-install"
@@ -1117,6 +1163,22 @@ IF nil, do nothing")
           (let ((tag (sf-cmd:create-or-update-tags)))
             (when (and tag (file-exists-p tag))
               (every 'phpcmp-tag-p (phpcmp-etags-get-tags tag))))))
+
+      (desc "sf:get-tags-structs")
+      (expect t
+        (ignore-errors (delete-file (sf:project-absolute-path sf:tags-file-name)))
+        (let ((tags (sf:with-current-dir (sf:askeet-path-to "apps/frontend/modules/user/actions" "actions.class.php")
+                      (sf-cmd:create-or-update-tags)
+                      (sf:get-tags-structs))))
+          (and (> (length tags) 10)
+               (every 'phpcmp-tag-p (phpcmp-etags-get-tags tag)))))
+
+      (expect "return from cache"
+        (let ((sf:tags-cache "return from cache"))
+          (let ((tags (sf:with-current-dir (sf:askeet-path-to "apps/frontend/modules/user/actions" "actions.class.php")
+                        (sf:get-tags-structs))))
+            (and (> (length tags) 10)
+                 (every 'phpcmp-tag-p (phpcmp-etags-get-tags tag))))))
       )))
 
 
