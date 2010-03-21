@@ -966,12 +966,12 @@ IF nil, do nothing")
             (kill-buffer (current-buffer)))))
 
       (desc "sf:project-files")
-      (expect '("t/askeet/apps/frontend/modules/user" "t/askeet/apps/frontend/modules/tag" "t/askeet/apps/frontend/modules/sidebar" "t/askeet/apps/frontend/modules/question" "t/askeet/apps/frontend/modules/moderator" "t/askeet/apps/frontend/modules/mail" "t/askeet/apps/frontend/modules/feed" "t/askeet/apps/frontend/modules/content" "t/askeet/apps/frontend/modules/api" "t/askeet/apps/frontend/modules/answer" "t/askeet/apps/frontend/modules/administrator")
-        (sf:abs->relative
+      (expect (sort '("t/askeet/apps/frontend/modules/user" "t/askeet/apps/frontend/modules/tag" "t/askeet/apps/frontend/modules/sidebar" "t/askeet/apps/frontend/modules/question" "t/askeet/apps/frontend/modules/moderator" "t/askeet/apps/frontend/modules/mail" "t/askeet/apps/frontend/modules/feed" "t/askeet/apps/frontend/modules/content" "t/askeet/apps/frontend/modules/api" "t/askeet/apps/frontend/modules/answer" "t/askeet/apps/frontend/modules/administrator") #'string<)
+        (sort (sf:abs->relative
          (sf:with-current-dir (sf:askeet-path-to "apps/frontend/modules/user/actions" "actions.class.php")
            (remove-if-not (lambda (file-name)
                             (string-match (rx "/modules/" (+ (not (any "/"))) eol) file-name))
-                          (sf:project-files t)))))
+                          (sf:project-files t)))) #'string<))
 
       (desc "sf:get-module-dir-or-root")
       (expect "t/askeet/apps/frontend/modules/"
@@ -1052,10 +1052,11 @@ IF nil, do nothing")
                          (buffer-substring-no-properties (point-at-bol) (point-at-eol))))))
 
       (desc "sf:relative-files")
-      (expect '("t/askeet/apps/frontend/modules/user/validate" "t/askeet/apps/frontend/modules/user/validate/update.yml" "t/askeet/apps/frontend/modules/user/validate/passwordRequest.yml" "t/askeet/apps/frontend/modules/user/validate/login.yml" "t/askeet/apps/frontend/modules/user/validate/add.yml" "t/askeet/apps/frontend/modules/user/templates" "t/askeet/apps/frontend/modules/user/templates/voteSuccess.php" "t/askeet/apps/frontend/modules/user/templates/showSuccess.php" "t/askeet/apps/frontend/modules/user/templates/reportQuestionSuccess.php" "t/askeet/apps/frontend/modules/user/templates/reportAnswerSuccess.php" "t/askeet/apps/frontend/modules/user/templates/passwordRequestSuccess.php" "t/askeet/apps/frontend/modules/user/templates/passwordRequestMailSent.php" "t/askeet/apps/frontend/modules/user/templates/loginSuccess.php" "t/askeet/apps/frontend/modules/user/templates/listInterestedBySuccess.php" "t/askeet/apps/frontend/modules/user/templates/interestedSuccess.php"  "t/askeet/apps/frontend/modules/user/lib" "t/askeet/apps/frontend/modules/user/config" "t/askeet/apps/frontend/modules/user/config/view.yml" "t/askeet/apps/frontend/modules/user/config/security.yml" "t/askeet/apps/frontend/modules/user/actions" "t/askeet/apps/frontend/modules/user/actions/voteAction.class.php" "t/askeet/apps/frontend/modules/user/actions/actions.class.php")
-        (sf:abs->relative
-         (sf:with-file-buffer (sf:askeet-path-to "apps/frontend/modules/user/actions" "voteAction.class.php")
-           (sf:relative-files))))
+      (expect (sort '("t/askeet/apps/frontend/modules/user/validate" "t/askeet/apps/frontend/modules/user/validate/update.yml" "t/askeet/apps/frontend/modules/user/validate/passwordRequest.yml" "t/askeet/apps/frontend/modules/user/validate/login.yml" "t/askeet/apps/frontend/modules/user/validate/add.yml" "t/askeet/apps/frontend/modules/user/templates" "t/askeet/apps/frontend/modules/user/templates/voteSuccess.php" "t/askeet/apps/frontend/modules/user/templates/showSuccess.php" "t/askeet/apps/frontend/modules/user/templates/reportQuestionSuccess.php" "t/askeet/apps/frontend/modules/user/templates/reportAnswerSuccess.php" "t/askeet/apps/frontend/modules/user/templates/passwordRequestSuccess.php" "t/askeet/apps/frontend/modules/user/templates/passwordRequestMailSent.php" "t/askeet/apps/frontend/modules/user/templates/loginSuccess.php" "t/askeet/apps/frontend/modules/user/templates/listInterestedBySuccess.php" "t/askeet/apps/frontend/modules/user/templates/interestedSuccess.php"  "t/askeet/apps/frontend/modules/user/lib" "t/askeet/apps/frontend/modules/user/config" "t/askeet/apps/frontend/modules/user/config/view.yml" "t/askeet/apps/frontend/modules/user/config/security.yml" "t/askeet/apps/frontend/modules/user/actions" "t/askeet/apps/frontend/modules/user/actions/voteAction.class.php" "t/askeet/apps/frontend/modules/user/actions/actions.class.php") #'string<)
+        (sort
+         (sf:abs->relative
+           (sf:with-file-buffer (sf:askeet-path-to "apps/frontend/modules/user/actions" "voteAction.class.php")
+                 (sf:relative-files))) #'string<))
 
       (desc "sf:get-log-directory")
       (expect "t/askeet/log/"
@@ -1171,17 +1172,135 @@ IF nil, do nothing")
                       (sf-cmd:create-or-update-tags)
                       (sf:get-tags-structs))))
           (and (> (length tags) 10)
-               (every 'phpcmp-tag-p (phpcmp-etags-get-tags tag)))))
+               (every 'phpcmp-tag-p (phpcmp-etags-get-tags tags)))))
 
-      (expect "return from cache"
-        (let ((sf:tags-cache "return from cache"))
+      (expect t
+        (let ((sf:tags-cache nil))
           (let ((tags (sf:with-current-dir (sf:askeet-path-to "apps/frontend/modules/user/actions" "actions.class.php")
                         (sf:get-tags-structs))))
             (and (> (length tags) 10)
-                 (every 'phpcmp-tag-p (phpcmp-etags-get-tags tag))))))
+                 (every 'phpcmp-tag-p (phpcmp-etags-get-tags tags))))))
       )))
-
-
 
 (provide 'symfony)
 ;; symfony.el ends here.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
