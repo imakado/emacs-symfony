@@ -4,6 +4,7 @@
 
 ;; Author: IMAKADO <ken.imakado -at-  gmail.com>
 ;; blog: http://d.hatena.ne.jp/IMAKADO (japanese)
+;; Collaborator: kitokitoki <morihenotegami -at-  gmail.com>
 ;; Prefix: sf:
 
 ;; This file is free software; you can redistribute it and/or modify
@@ -24,7 +25,7 @@
 
 ;;; Commentary:
 
-;; tested only on emamcs22
+;; tested on emamcs22 and emacs23
 
 ;; some code taken from rails.el
 
@@ -54,6 +55,19 @@
 ;;; TODO:
 ;; - Integration with symfony command.
 ;; - Code Completion
+
+;;; Change Log
+;; 1.0.1:(kitokitoki)
+;;       about settings:
+;;         add  parameter: sf:candidate-number-limit, persistent-action
+;;       about anything source:
+;;         edit sf:anything-project: candidate-number-limit, action "Find file(s)", persistent-action
+;;         add  anything-c-source-symfony-el-command
+;;       about command:
+;;         add command sf-cmd:js-files, sf-cmd:css-files,sf-cmd:all-project-files-resume,
+;;                     sf-cmd:model-files-resume, sf-cmd:action-files-resume, etc..
+;; 1.0.0:
+
 
 (require 'cl)
 (require 'rx)
@@ -99,6 +113,12 @@ e.x,
 (defvar sf:previous-log-file nil)
 
 (defvar sf:number-of-lines-shown-when-opening-log-file 200)
+
+(defvar sf:candidate-number-limit 9999
+  "value of candidate-number-limit. Candidate-number-limit overrides
+`anything-candidate-number-limit' only for this source.")
+
+(defvar sf:persistent-action-buffer "*symfony*")
 
 (defmacro* sf:with-root (&body body)
   (let ((root (gensym)))
@@ -276,7 +296,16 @@ Note, dont return just STRING even if find one template file."
   "if this variable is set to non-nil and candidates is just one,
 find file quickly (dont use anything interface)")
 
-(defun sf:anything-project (--candidates)
+(defun sf:anything-project-persistent-action (c)
+  (let ((b (get-buffer-create sf:persistent-action-buffer)))
+      (with-current-buffer b
+        (erase-buffer)
+        (insert-file-contents c)
+        (goto-char (point-min)))
+      (pop-to-buffer b))
+  (ignore-errors (run-hooks 'sf:after-anything-project-action-hook)))
+
+(defun sf:anything-project (--candidates &optional buffer-name)
   (cond
    ((and sf:quickly-find-file-when-candidates-length-is-1
          (= (length --candidates) 1))
@@ -288,9 +317,17 @@ find file quickly (dont use anything interface)")
                        (with-current-buffer (anything-candidate-buffer 'local)
                          (insert (mapconcat 'identity --candidates "\n")))))
              (candidates-in-buffer)
-             (action . (("Find file" .
-                         sf:anything-project-find-file))))))
-      (anything (list source))))))
+             (candidate-number-limit . ,sf:candidate-number-limit)
+             (action . (("Find file(s)" .
+                          (lambda (candidate)
+                            (dolist (i (anything-marked-candidates))
+                              (sf:anything-project-find-file i))))))
+             (persistent-action . (lambda (candidate)
+                                    (sf:anything-project-persistent-action candidate)))
+             (cleanup . (lambda ()
+                          (if (get-buffer sf:persistent-action-buffer)
+                              (kill-buffer sf:persistent-action-buffer)))))))
+      (anything-other-buffer (list source) buffer-name)))))
 
 (defun sf:anything-project-find-file (c)
   (find-file c)
@@ -476,11 +513,39 @@ when sf:tags-cache is set, return it."
 ;;   (sf-cmd:update-caches)
 ;;   (sf:tags-build-class-candidates))
 
+(defvar anything-c-source-symfony-el-command
+  '((name . "symfony-el-comand")
+    (candidates
+     . (sf-cmd:all-project-files
+        sf-cmd:primary-switch
+        sf-cmd:relative-files
+        sf-cmd:model-files
+        sf-cmd:action-files
+        sf-cmd:template-files
+        sf-cmd:helper-files
+        sf-cmd:js-files
+        sf-cmd:css-files
+        sf-cmd:test-files
+        sf-cmd:fixture-files
+        sf-cmd:open-log-file
+        sf-cmd:create-or-update-tags
+        sf-cmd:update-caches
+        sf-script:kill-process
+        sf-script:output-mode
+        sf-template:switch-to-action
+        sf-action:switch-to-template
+        sf:create_partial_on_region))
+    (type . command)))
+
+(defun sf-cmd:anything-symfony-el-command ()
+  (interactive)
+  (anything (list anything-c-source-symfony-el-command) nil nil nil))
+
 ;;;; Commands
 ;; Prefix: sf-cmd:
 (defun sf-cmd:all-project-files ()
   (interactive)
-  (sf:anything-project (sf:project-files)))
+  (sf:anything-project (sf:project-files) "*sf-all-project-files*"))
 
 (defun sf-cmd:primary-switch ()
   (interactive)
@@ -492,23 +557,35 @@ when sf:tags-cache is set, return it."
 
 (defun sf-cmd:model-files ()
   (interactive)
-  (sf:anything-project (sf:matched-files "model")))
+  (sf:anything-project (sf:matched-files "model") "*sf-model-files*"))
 
 (defun sf-cmd:action-files ()
   (interactive)
-  (sf:anything-project (sf:matched-files "actions")))
+  (sf:anything-project (sf:matched-files "actions") "*sf-action-files*"))
 
 (defun sf-cmd:template-files ()
   (interactive)
-  (sf:anything-project (sf:matched-files "templates")))
+  (sf:anything-project (sf:matched-files "templates") "*sf-template-files*"))
 
 (defun sf-cmd:helper-files ()
   (interactive)
-  (sf:anything-project (sf:matched-files "helper")))
+  (sf:anything-project (sf:matched-files "helper") "*sf-helper-files*"))
+
+(defun sf-cmd:js-files ()
+  (interactive)
+  (sf:anything-project (sf:matched-files "js") "*sf-js-files*"))
+
+(defun sf-cmd:css-files ()
+  (interactive)
+  (sf:anything-project (sf:matched-files "css") "*sf-css-files*"))
 
 (defun sf-cmd:test-files ()
   (interactive)
-  (sf:anything-project (sf:matched-files "test")))
+  (sf:anything-project (sf:matched-files "test") "*sf-test-files*"))
+
+(defun sf-cmd:fixture-files ()
+  (interactive)
+  (sf:anything-project (sf:matched-files "fixtures") "*sf-fixture-files*"))
 
 (defun sf-cmd:open-log-file (log-file)
   (interactive
@@ -540,6 +617,60 @@ when sf:tags-cache is set, return it."
   (setq sf:project-cache nil)
   (setq sf:tags-cache nil)
   (sf-cmd:create-or-update-tags))
+
+(defun sf-cmd:all-project-files-resume ()
+  (interactive)
+  (if (get-buffer "*sf-all-project-files*")
+    (anything-resume "*sf-all-project-files*")
+    (sf-cmd:all-project-files)))
+
+(defun sf-cmd:model-files-resume ()
+  (interactive)
+  (if (get-buffer "*sf-model-files*")
+    (anything-resume "*sf-model-files*")
+    (sf-cmd:model-files-resume)))
+
+(defun sf-cmd:action-files-resume ()
+  (interactive)
+  (if (get-buffer "*sf-action-files*")
+    (anything-resume "*sf-action-files*")
+    (sf-cmd:action-files-resume)))
+  
+(defun sf-cmd:template-files-resume ()
+  (interactive)
+  (if (get-buffer "*sf-template-files*")
+    (anything-resume "*sf-template-files*")
+    (sf-cmd:template-files-resume)))
+
+(defun sf-cmd:helper-files-resume ()
+  (interactive)
+  (if (get-buffer "*sf-helper-files*")
+    (anything-resume "*sf-helper-files*")
+    (sf-cmd:helper-files-resume)))
+  
+(defun sf-cmd:js-files-resume ()
+  (interactive)
+  (if (get-buffer "*sf-js-files*")
+    (anything-resume "*sf-js-files*")
+    (sf-cmd:js-files-resume)))
+  
+(defun sf-cmd:css-files-resume ()
+  (interactive)
+  (if (get-buffer "*sf-css-files*")
+    (anything-resume "*sf-css-files*")
+    (sf-cmd:css-files-resume)))
+  
+(defun sf-cmd:test-files-resume ()
+  (interactive)
+  (if (get-buffer "*sf-test-files*")
+    (anything-resume "*sf-test-files*")
+    (sf-cmd:test-files-resume)))
+  
+(defun sf-cmd:fixture-files-resume ()
+  (interactive)
+  (if (get-buffer "*sf-fixture-files*")
+    (anything-resume "*sf-fixture-files*")
+    (sf-cmd:fixture-files-resume)))
 
 ;;;; Minor Mode
 (defmacro sf:key-with-prefix (key-kbd-sym)
@@ -819,11 +950,13 @@ IF nil, do nothing")
 (sf:define-key "C-c g a" 'sf-cmd:action-files)
 (sf:define-key "C-c g h" 'sf-cmd:helper-files)
 (sf:define-key "C-c g t" 'sf-cmd:template-files)
+(sf:define-key "C-c g j" 'sf-cmd:js-files)
+(sf:define-key "C-c g c" 'sf-cmd:css-files)
 (sf:define-key "C-c g T" 'sf-cmd:test-files)
+(sf:define-key "C-c g f" 'sf-cmd:fixture-files)
 
 (sf:define-key "C-c l" 'sf-cmd:open-log-file)
 (sf:define-key "C-c C-t" 'sf-cmd:create-or-update-tags)
-
 
 ;;;; Install
 (defun sf:find-file-hook ()
@@ -1184,123 +1317,3 @@ IF nil, do nothing")
 
 (provide 'symfony)
 ;; symfony.el ends here.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
