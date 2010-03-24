@@ -318,7 +318,8 @@ find file quickly (dont use anything interface)")
                          (insert (mapconcat 'identity --candidates "\n")))))
              (candidates-in-buffer)
              (candidate-number-limit . ,sf:candidate-number-limit)
-             (action . (("Find file(s)" .
+             (action . (("Find file" . sf:anything-project-find-file)
+                        ("Find file(s)" .
                           (lambda (candidate)
                             (dolist (i (anything-marked-candidates))
                               (sf:anything-project-find-file i))))))
