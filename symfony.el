@@ -619,21 +619,6 @@ when sf:tags-cache is set, return it."
   (setq sf:tags-cache nil)
   (sf-cmd:create-or-update-tags))
 
-(defmacro aif (test-form then-form &optional else-form)
-  `(let ((it ,test-form))
-     (if it ,then-form ,else-form)))
-
-(defun sf-cmd:action-files-resume ()
-  (interactive)
-  (aif (get-buffer "*scratchf*")
-    (anything-resume it)
-    (sf-cmd:action-files-resume)))
-
-(defmacro anything-aif (test-form then-form &rest else-forms)
-  "Anaphoric if. Temporary variable `it' is the result of test-form."
-  `(let ((it ,test-form))
-     (if it ,then-form ,@else-forms)))
-
 (defun sf-cmd:all-project-files-resume ()
   (interactive)
   (anything-aif (get-buffer "*sf-all-project-files*")
