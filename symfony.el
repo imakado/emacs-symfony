@@ -522,6 +522,7 @@ when sf:tags-cache is set, return it."
         sf-cmd:relative-files
         sf-cmd:model-files
         sf-cmd:action-files
+        sf-cmd:validator-files        
         sf-cmd:template-files
         sf-cmd:helper-files
         sf-cmd:js-files
@@ -563,6 +564,10 @@ when sf:tags-cache is set, return it."
 (defun sf-cmd:action-files ()
   (interactive)
   (sf:anything-project (sf:matched-files "actions") "*sf-action-files*"))
+
+(defun sf-cmd:validator-files ()
+  (interactive)
+  (sf:anything-project (sf:matched-files "validate") "*sf-validator-files*"))
 
 (defun sf-cmd:template-files ()
   (interactive)
