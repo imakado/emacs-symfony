@@ -81,10 +81,10 @@
 (require 'php-completion)
 
 
-;; i'm not sure, anyone can change this? - IMAKADO
 (defconst sf:MODULES-DIR-NAME "modules")
 (defconst sf:TEMPLATES-DIR-NAME "templates")
 (defconst sf:APP-MODULE-ACTION-DIR-NAME "actions")
+(defconst sf:VALIDATORS-DIR-NAME "validate")
 (defconst sf:ACTIONS-CLASS-PHP "actions.class.php")
 (defconst sf:ACTIONS-FILE-RULE "Action.class.php")
 
@@ -518,7 +518,6 @@ when sf:tags-cache is set, return it."
   '((name . "symfony-el-comand")
     (candidates
      . (sf-cmd:all-project-files
-        sf-cmd:primary-switch
         sf-cmd:relative-files
         sf-cmd:model-files
         sf-cmd:action-files
@@ -533,10 +532,7 @@ when sf:tags-cache is set, return it."
         sf-cmd:create-or-update-tags
         sf-cmd:update-caches
         sf-script:kill-process
-        sf-script:output-mode
-        sf-template:switch-to-action
-        sf-action:switch-to-template
-        sf:create_partial_on_region))
+        sf-script:output-mode))
     (type . command)))
 
 (defun sf-cmd:anything-symfony-el-command ()
@@ -831,6 +827,88 @@ when sf:tags-cache is set, return it."
       (list file-path))))
 
 (defun sf-template:get-specify-actions-saparate-file (action-name actions-directory)
+  "return list"
+  (let* ((file-name (concat action-name sf:ACTIONS-FILE-RULE))
+         (file-path (sf:catdir actions-directory file-name)))
+    (when (and file-path (file-exists-p file-path) (file-readable-p file-path))
+      (list file-path))))
+
+(defun sf-action:switch-to-validator ()
+  (interactive)
+  (let ((validators (sf-action:get-validators)))
+    (cond
+     (validators
+      (sf:anything-project validators))
+     (t
+      (call-interactively 'find-file)))))
+
+(defun sf-action:get-validators ()
+  (cond
+   ;; actions/actions.class.php
+   ((string= (sf:this-file-name) sf:ACTIONS-CLASS-PHP)
+    (let ((action-name (sf:take-off-execute (sf:take-function-name))))
+      (sf-action:get-validators-by-action-name action-name)))
+   ;; fooAction.class.php case
+   (t
+    (let ((action-name (sf:take-off-action (sf:take-class-name))))
+      (sf-action:get-validators-by-action-name action-name)
+      ))))
+
+(defun sf-action:get-validators-by-action-name (action-name)
+  (when action-name
+    (loop for dir in (sf:get-validators-directory)
+          nconc (sf:directory-files-recursively
+                 (rx-to-string `(and ,action-name ".yml"))
+                 dir))))
+
+(defun sf:get-validators-directory ()
+  (let ((validators-finder
+         (lambda (cur-dir)
+           (let ((validator-dir (sf:catdir cur-dir (concat "/" sf:VALIDATORS-DIR-NAME "/"))))
+             (file-directory-p validator-dir)))))
+    (let ((ret (sf:find-upper-directiory validators-finder)))
+      (when ret
+        (list (sf:catdir ret sf:VALIDATORS-DIR-NAME))))))
+
+(defun sf-validator:switch-to-action ()
+  (interactive)
+  (lexical-let* ((action-name (file-name-sans-extension (sf:this-file-name))))
+    (when action-name
+      (lexical-let* ((actions (sf-validator:get-specify-actions-by-action-name action-name))
+                     (execute-re (rx-to-string
+                                  `(and "public"
+                                        (+ space)
+                                        "function"
+                                        (+ space)
+                                        "execute"
+                                        ,action-name
+                                        "()")))
+                     (class-re (rx-to-string `(and "class" (+ space) ,action-name "Action"))))
+        (let ((sf:after-anything-project-action-hook
+               (list
+                (lambda ()
+                  (goto-char (point-min))
+                  (or (re-search-forward execute-re nil t)
+                      (re-search-forward class-re nil t))))))
+          (sf:anything-project actions))))))
+
+;; vote.yml -> user/validate/voteAction.class.php
+(defun sf-validator:get-specify-actions-by-action-name (action-name)
+  (let* ((module-directory (sf:get-module-directory))
+         (actions-directory (sf:catdir module-directory "actions")))
+    (assert (and actions-directory
+                 (file-directory-p actions-directory)))
+    (append (sf-validator:get-specify-actions-actions-class action-name actions-directory)
+            (sf-validator:get-specify-actions-saparate-file action-name actions-directory)
+            )))
+
+(defun sf-validator:get-specify-actions-actions-class (action-name actions-directory)
+  "return list"
+  (let ((file-path (sf:catdir actions-directory sf:ACTIONS-CLASS-PHP)))
+    (when (and file-path (file-exists-p file-path) (file-readable-p file-path))
+      (list file-path))))
+
+(defun sf-validator:get-specify-actions-saparate-file (action-name actions-directory)
   "return list"
   (let* ((file-name (concat action-name sf:ACTIONS-FILE-RULE))
          (file-path (sf:catdir actions-directory file-name)))
