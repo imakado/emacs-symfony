@@ -87,6 +87,7 @@
 (defconst sf:VALIDATORS-DIR-NAME "validate")
 (defconst sf:ACTIONS-CLASS-PHP "actions.class.php")
 (defconst sf:ACTIONS-FILE-RULE "Action.class.php")
+(defconst sf:TEST-BUFFER "*sf:test*")
 
 (defvar sf:mode-directory-rules
   `(
@@ -673,6 +674,17 @@ when sf:tags-cache is set, return it."
   (anything-aif (get-buffer "*sf-fixture-files*")
     (anything-resume it)
     (sf-cmd:fixture-files)))
+
+(defun sf-cmd:execute-test ()
+  (interactive)
+  (unless (executable-find "php")
+    (error "php not found"))
+  (let ((test-command (concat "php " (buffer-file-name))))
+    (shell-command test-command sf:TEST-BUFFER)
+    (with-current-buffer sf:TEST-BUFFER
+      (highlight-lines-matching-regexp "ok" 'hi-green-b)
+      (highlight-lines-matching-regexp "not ok" 'hi-red-b))
+    (view-buffer-other-window sf:TEST-BUFFER t (lambda (buf) (kill-buffer-and-window)))))
 
 ;;;; Minor Mode
 (defmacro sf:key-with-prefix (key-kbd-sym)
