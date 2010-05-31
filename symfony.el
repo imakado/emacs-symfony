@@ -682,11 +682,12 @@ when sf:tags-cache is set, return it."
   (let ((test-command (concat "php " (buffer-file-name))))
     (shell-command test-command sf:TEST-BUFFER)
     (with-current-buffer sf:TEST-BUFFER
-      (highlight-lines-matching-regexp "ok" 'hi-green-b)
-      (highlight-lines-matching-regexp "not ok" 'hi-red-b))
+      (highlight-lines-matching-regexp "\\\<ok\\\>" 'hi-green-b)
+      (highlight-lines-matching-regexp "\\\<not ok\\\>" 'hi-red-b))
     (view-buffer-other-window sf:TEST-BUFFER t (lambda (buf) (kill-buffer-and-window)))))
 
 ;;;; Minor Mode
+
 (defmacro sf:key-with-prefix (key-kbd-sym)
   (let ((key-str (symbol-value key-kbd-sym)))
     `(kbd ,(concat sf:minor-mode-prefix-key " " key-str))))
@@ -1412,4 +1413,3 @@ IF nil, do nothing")
       )))
 
 (provide 'symfony)
-;; symfony.el ends here.
