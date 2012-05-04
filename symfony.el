@@ -43,7 +43,7 @@
 ;; install requires libraries:
 ;; `anything.el' http://www.emacswiki.org/emacs/anything.el
 ;; `anything-match-plugin.el'  http://www.emacswiki.org/emacs/anything-match-plugin.el
-;; `anything-project.el' http://github.com/imakado/emacs-symfony/tree/master
+;; `anything-project.el' https://github.com/imakado/anything-project
 ;; `anything-grep'  http://www.emacswiki.org/emacs/anything-grep.el
 
 ;; `symfony.el' http://github.com/imakado/emacs-symfony/tree/master (this file)
